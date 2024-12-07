@@ -29,13 +29,12 @@ class LinkService
         $html = Http::get($data['original_url'])->body();
 
         $crawler = new Crawler($html);
-        $crawler->filterXPath('//title')->text();
-
+        $title = $crawler->filterXPath('//title')->text();
 
         return $this->repository->create([
             'original_url' => $data['original_url'],
             'path' => $shortPath,
-            'title' => $data['title'] ?? null,
+            'title' => $title,
             'user_id' => $userId,
         ]);
     }
