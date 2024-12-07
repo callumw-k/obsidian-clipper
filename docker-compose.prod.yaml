@@ -5,6 +5,7 @@ services:
       args:
         APP_URL: ${APP_URL}
         ASSET_URL: ${APP_URL}
+        FRONTEND_URL: ${APP_URL}
     environment:
       PHP_OPCACHE_ENABLE: 1
       AUTORUN_ENABLED: true

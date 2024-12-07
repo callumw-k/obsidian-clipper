@@ -38,6 +38,7 @@ RUN npm install
 COPY . .
 ARG APP_URL
 ARG ASSET_URL
+ARG FRONTEND_URL
 
 RUN echo "Building with APP_URL=${APP_URL}"
 RUN echo "Building with ASSET_URL=${ASSET_URL}"
