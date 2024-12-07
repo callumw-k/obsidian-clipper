@@ -6,10 +6,8 @@ use App\Models\Link;
 use App\Services\LinkService;
 use Auth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Http;
 use Inertia\Inertia;
-use Log;
-
 class LinkController extends Controller
 {
     protected LinkService $linkService;
