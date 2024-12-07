@@ -4,7 +4,16 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
 
-export default function Dashboard() {
+type Link = {
+    id: number;
+    title?: string;
+    original_url: string;
+    path: string;
+};
+
+type Links = Link[];
+
+export default function Dashboard({ links }: { links: Links }) {
     const { post, data, setData } = useForm({
         original_url: '',
     });
@@ -18,7 +27,7 @@ export default function Dashboard() {
     return (
         <AuthenticatedLayout>
             <Head title="Dashboard" />
-            <div className={'flex justify-center p-8'}>
+            <div className={'flex flex-col justify-center p-8'}>
                 <div className={'w-full max-w-xl'}>
                     <form onSubmit={onSubmit} className={'space-y-4'}>
                         <Input
@@ -30,6 +39,15 @@ export default function Dashboard() {
                         />
                         <Button type={'submit'}>Shorten URL</Button>
                     </form>
+                </div>
+                <div className={'prose mt-8'}>
+                    {links.map((link) => (
+                        <div key={link.id}>
+                            <a target={'_blank'} href={link.original_url}>
+                                {link.title ?? link.original_url}
+                            </a>
+                        </div>
+                    ))}
                 </div>
             </div>
         </AuthenticatedLayout>

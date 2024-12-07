@@ -39,4 +39,14 @@ class LinkController extends Controller
 
         return to_route('dashboard');
     }
+
+    public function processRedirect(Request $request)
+    {
+        $path = $request->path();
+        $link = Link::where('path', $path)->first();
+        if (!$link) {
+            abort(404, 'Shortened URL not found');
+        }
+        return redirect($link->original_url);
+    }
 }

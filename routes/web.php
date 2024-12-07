@@ -16,7 +16,8 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    $links = Auth::user()->links()->get(['title', 'original_url', 'path', 'id']);
+    return Inertia::render('Dashboard', ['links' => $links]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -28,5 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::fallback([LinkController::class, 'processRedirect']);
 
 require __DIR__ . '/auth.php';
