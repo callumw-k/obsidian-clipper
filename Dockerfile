@@ -37,11 +37,16 @@ RUN npm install
 
 COPY . .
 ARG APP_URL
-ARG ASSET_URL
-ARG FRONTEND_URL
+
+
+ENV VITE_APP_URL=${APP_URL}
+ENV VITE_ASSET_URL=${APP_URL}
+ENV ASSET_URL=${APP_URL}
+ENV FRONTEND_URL=${APP_URL}
 
 RUN echo "Building with APP_URL=${APP_URL}"
 RUN echo "Building with ASSET_URL=${ASSET_URL}"
+RUN echo "Building with VITE_ASSET_URL=${VITE_ASSET_URL}"
 
 ENV NODE_ENV production
 RUN npm run build
