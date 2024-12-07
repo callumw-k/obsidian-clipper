@@ -2,6 +2,8 @@ services:
   php:
     build:
       context: .
+      args:
+        APP_URL: ${APP_URL}
     environment:
       PHP_OPCACHE_ENABLE: 1
       AUTORUN_ENABLED: true
