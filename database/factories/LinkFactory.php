@@ -3,7 +3,10 @@
 namespace Database\Factories;
 
 use App\Models\Link;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * @extends Factory<Link>
@@ -17,10 +20,16 @@ class LinkFactory extends Factory
      */
     public function definition(): array
     {
+        $user = User::firstOrCreate(['email' => 'cwellkane@gmail.com'], [
+            'name' => $this->faker->name(),
+            'password' => User::createPasswordHash('password'),
+        ]);
+
         return [
-            'title' => $this->faker->optional()->sentence(), // Optional title
-            'original_url' => $this->faker->url(),          // Random URL
-            'path' => $this->faker->unique()->slug(),       // Unique slug
+            'title' => $this->faker->optional()->sentence(),
+            'original_url' => $this->faker->url(),
+            'path' => $this->faker->unique()->slug(),
+            'user_id' => $user->id,
         ];
     }
 }

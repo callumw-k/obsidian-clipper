@@ -1,23 +1,35 @@
+import { Button } from '@/Components/ui/button';
+import { Input } from '@/Components/ui/input';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
+import { FormEvent } from 'react';
 
 export default function Dashboard() {
+    const { post, data, setData } = useForm({
+        original_url: '',
+    });
+
+    function onSubmit(e: FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        console.debug(data);
+        post('/links');
+    }
+
     return (
-        <AuthenticatedLayout
-            header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Dashboard
-                </h2>
-            }
-        >
+        <AuthenticatedLayout>
             <Head title="Dashboard" />
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">
-                            You're logged in!
-                        </div>
-                    </div>
+            <div className={'flex justify-center p-8'}>
+                <div className={'w-full max-w-xl'}>
+                    <form onSubmit={onSubmit} className={'space-y-4'}>
+                        <Input
+                            placeholder={'URL to shorten'}
+                            value={data.original_url}
+                            onChange={(e) =>
+                                setData('original_url', e.target.value)
+                            }
+                        />
+                        <Button type={'submit'}>Shorten URL</Button>
+                    </form>
                 </div>
             </div>
         </AuthenticatedLayout>
