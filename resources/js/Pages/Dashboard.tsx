@@ -14,13 +14,14 @@ type Link = {
 type Links = Link[];
 
 export default function Dashboard({ links }: { links: Links }) {
-    const { post, data, setData } = useForm({
+    const { post, data, setData, reset } = useForm({
         original_url: '',
+        test_number: '',
     });
 
     function onSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        post('/links');
+        post('/links', { onSuccess: () => reset() });
     }
 
     return (
@@ -35,6 +36,24 @@ export default function Dashboard({ links }: { links: Links }) {
                             onChange={(e) =>
                                 setData('original_url', e.target.value)
                             }
+                        />
+                        <Input
+                            value={data.test_number}
+                            type={'number'}
+                            onChange={(e) => {
+                                const value = e.target.value;
+
+                                // Allow empty input
+                                if (value === '') {
+                                    setData('test_number', value);
+                                    return;
+                                }
+
+                                // Validate input using a regular expression (only digits allowed)
+                                if (/^\d+$/.test(value)) {
+                                    setData('test_number', value);
+                                }
+                            }}
                         />
                         <Button type={'submit'}>Shorten URL</Button>
                     </form>
