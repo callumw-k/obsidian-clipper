@@ -37,6 +37,7 @@ RUN npm install
 
 COPY . .
 ARG APP_URL
+ARG ASSET_URL
 ENV NODE_ENV production
 RUN npm run build
 
