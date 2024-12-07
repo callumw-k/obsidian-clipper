@@ -28,7 +28,7 @@ export default function Dashboard({ links }: { links: Links }) {
             <Head title="Dashboard" />
             <div className={'flex flex-col items-center p-8'}>
                 <div className={'w-full max-w-2xl'}>
-                    <form onSubmit={onSubmit} className={'space-y-4'}>
+                    <form onSubmit={onSubmit} className={'flex space-x-4'}>
                         <Input
                             placeholder={'URL to shorten'}
                             value={data.original_url}
@@ -38,16 +38,20 @@ export default function Dashboard({ links }: { links: Links }) {
                         />
                         <Button type={'submit'}>Shorten URL</Button>
                     </form>
-                    <div className={'prose mt-8'}>
-                        {links.map((link) => (
-                            <div key={link.id}>
-                                <a target={'_blank'} href={link.original_url}>
-                                    {link.title ?? link.original_url}
-                                </a>
-                            </div>
-                        ))}
-                    </div>
                 </div>
+            </div>
+            <div className={'prose mx-auto mt-8 w-full dark:prose-invert'}>
+                {links.map((link) => (
+                    <div
+                        key={link.id}
+                        className={'flex flex-row justify-between'}
+                    >
+                        <a target={'_blank'} href={link.original_url}>
+                            {link.title ?? link.original_url}
+                        </a>
+                        <p className={'m-0'}>Pathname: {link.path}</p>
+                    </div>
+                ))}
             </div>
         </AuthenticatedLayout>
     );
