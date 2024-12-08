@@ -24,7 +24,7 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
     Route::post('/links', [LinkController::class, 'store'])->name('links.store');
-    Route::put('/links/{id}', [LinkController::class, 'update'])->name('links.store');
+    Route::put('/links/{id}', [LinkController::class, 'update'])->name('links.update');
 });
 
 Route::middleware('auth')->group(function () {
