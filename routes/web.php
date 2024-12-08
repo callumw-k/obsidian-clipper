@@ -18,12 +18,13 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    $links = Auth::user()->links()->get(['title', 'original_url', 'path', 'id']);
+    $links = Auth::user()->links()->orderByDesc('created_at')->get(['title', 'original_url', 'path', 'id', 'created_at', 'image']);
     return Inertia::render('Dashboard', ['links' => $links]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::post('/links', [LinkController::class, 'store'])->name('links.store');
+    Route::put('/links/{id}', [LinkController::class, 'update'])->name('links.store');
 });
 
 Route::middleware('auth')->group(function () {

@@ -6,8 +6,8 @@ use App\Models\Link;
 use App\Services\LinkService;
 use Auth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Inertia\Inertia;
+
 class LinkController extends Controller
 {
     protected LinkService $linkService;
@@ -22,6 +22,24 @@ class LinkController extends Controller
         return Inertia::render('Dashboard', [
             'links' => Link::all(),
         ]);
+    }
+
+    public function update(Request $request, int $id)
+    {
+
+        $validated = $request->validate([
+            'original_url' => ['nullable', 'url'],
+            'title' => ['nullable', 'string', 'max:255'],
+        ]);
+
+
+        $update = $this->linkService->update($id, $validated);
+       
+        if ($update) {
+            return to_route('dashboard')->with('success', 'Link updated successfully.');
+        }
+
+        return to_route('dashboard')->with('error', 'Unable to update link.');
     }
 
     public function store(Request $request)

@@ -1,27 +1,53 @@
+import LinkList from '@/Components/LinkList';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
+import { useToast } from '@/hooks/use-toast';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { ClipboardIcon } from '@heroicons/react/24/outline';
 import { Head, useForm } from '@inertiajs/react';
-import { FormEvent } from 'react';
+import { FormEvent, useRef } from 'react';
+import { z } from 'zod';
 
-type Link = {
+export type Link = {
     id: number;
     title?: string;
     original_url: string;
     path: string;
+    image: string;
 };
 
-type Links = Link[];
+export type Links = Link[];
 
 export default function Dashboard({ links }: { links: Links }) {
     const { post, data, setData, reset } = useForm({
         original_url: '',
-        test_number: '',
     });
+
+    const formRef = useRef<HTMLFormElement | null>(null);
 
     function onSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
+        handlePost();
+    }
+
+    const { toast } = useToast();
+
+    function handlePost() {
         post('/links', { onSuccess: () => reset() });
+    }
+
+    async function handlePast() {
+        const text = await navigator.clipboard.readText();
+        const validated = await z.string().url().safeParseAsync(text);
+        if (validated.success) {
+            setData('original_url', text);
+            return;
+        }
+        toast({
+            title: "Bucko, that ain't a valid URL",
+            variant: 'destructive',
+            duration: 1000,
+        });
     }
 
     return (
@@ -29,49 +55,34 @@ export default function Dashboard({ links }: { links: Links }) {
             <Head title="Dashboard" />
             <div className={'flex flex-col items-center p-8'}>
                 <div className={'w-full max-w-2xl'}>
-                    <form onSubmit={onSubmit} className={'flex space-x-4'}>
-                        <Input
-                            placeholder={'URL to shorten'}
-                            value={data.original_url}
-                            onChange={(e) =>
-                                setData('original_url', e.target.value)
-                            }
-                        />
-                        <Input
-                            value={data.test_number}
-                            type={'number'}
-                            onChange={(e) => {
-                                const value = e.target.value;
-
-                                // Allow empty input
-                                if (value === '') {
-                                    setData('test_number', value);
-                                    return;
+                    <form
+                        ref={formRef}
+                        onSubmit={onSubmit}
+                        className={'flex space-x-4'}
+                    >
+                        <div className={'relative w-full'}>
+                            <Input
+                                placeholder={'URL to shorten'}
+                                value={data.original_url}
+                                onChange={(e) =>
+                                    setData('original_url', e.target.value)
                                 }
-
-                                // Validate input using a regular expression (only digits allowed)
-                                if (/^\d+$/.test(value)) {
-                                    setData('test_number', value);
+                            />
+                            <button
+                                className={
+                                    'absolute right-0 top-0 h-full overflow-hidden px-2 py-2 text-input transition duration-150 hover:text-primary'
                                 }
-                            }}
-                        />
+                                onClick={handlePast}
+                                type={'button'}
+                            >
+                                <ClipboardIcon className={'size-4'} />
+                            </button>
+                        </div>
                         <Button type={'submit'}>Shorten URL</Button>
                     </form>
                 </div>
             </div>
-            <div className={'prose mx-auto mt-8 w-full dark:prose-invert'}>
-                {links.map((link) => (
-                    <div
-                        key={link.id}
-                        className={'flex flex-row justify-between'}
-                    >
-                        <a target={'_blank'} href={link.original_url}>
-                            {link.title ?? link.original_url}
-                        </a>
-                        <p className={'m-0'}>Pathname: {link.path}</p>
-                    </div>
-                ))}
-            </div>
+            <LinkList links={links} />
         </AuthenticatedLayout>
     );
 }

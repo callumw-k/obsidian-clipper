@@ -5,8 +5,6 @@ namespace Database\Factories;
 use App\Models\Link;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 /**
  * @extends Factory<Link>
@@ -30,6 +28,7 @@ class LinkFactory extends Factory
             'original_url' => $this->faker->url(),
             'path' => $this->faker->unique()->slug(),
             'user_id' => $user->id,
+            'created_at' => $this->faker->date(),
         ];
     }
 }

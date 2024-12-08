@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Database\Factories\LinkFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Link extends Model
 {
-    /** @use HasFactory<\Database\Factories\LinkFactory> */
+    /** @use HasFactory<LinkFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -16,6 +17,7 @@ class Link extends Model
         'original_url',
         'path',
         'user_id',
+        'image'
     ];
 
     public function user(): BelongsTo
