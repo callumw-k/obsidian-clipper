@@ -51,7 +51,7 @@ export default function Dashboard({ links }: { links: Links }) {
     return (
         <AuthenticatedLayout>
             <Head title="Dashboard" />
-            <div className={'flex flex-col items-center p-8'}>
+            <div className={'flex flex-col items-center p-4'}>
                 <div className={'w-full max-w-2xl'}>
                     <form onSubmit={onSubmit} className={'flex space-x-4'}>
                         <div className={'relative w-full'}>
