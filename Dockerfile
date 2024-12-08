@@ -16,12 +16,13 @@ RUN install-php-extensions memcached
 FROM base AS composer
 WORKDIR /app
 
-COPY composer*.json artisan ./
+COPY composer*.json composer.lock ./
+RUN composer install --no-dev --no-scripts --no-autoloader
+
 COPY app app
 COPY bootstrap bootstrap
 COPY storage storage
 COPY routes routes
-
 RUN composer install --no-dev
 
 
