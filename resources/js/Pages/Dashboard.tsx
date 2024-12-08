@@ -5,7 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { ClipboardIcon } from '@heroicons/react/24/outline';
 import { Head, useForm } from '@inertiajs/react';
-import { FormEvent, useRef } from 'react';
+import { FormEvent } from 'react';
 import { z } from 'zod';
 
 export type Link = {
@@ -23,9 +23,7 @@ export default function Dashboard({ links }: { links: Links }) {
         original_url: '',
     });
 
-    const formRef = useRef<HTMLFormElement | null>(null);
-
-    function onSubmit(e: FormEvent<HTMLFormElement>) {
+    async function onSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
         handlePost();
     }
@@ -36,7 +34,7 @@ export default function Dashboard({ links }: { links: Links }) {
         post('/links', { onSuccess: () => reset() });
     }
 
-    async function handlePast() {
+    async function handleToast() {
         const text = await navigator.clipboard.readText();
         const validated = await z.string().url().safeParseAsync(text);
         if (validated.success) {
@@ -55,11 +53,7 @@ export default function Dashboard({ links }: { links: Links }) {
             <Head title="Dashboard" />
             <div className={'flex flex-col items-center p-8'}>
                 <div className={'w-full max-w-2xl'}>
-                    <form
-                        ref={formRef}
-                        onSubmit={onSubmit}
-                        className={'flex space-x-4'}
-                    >
+                    <form onSubmit={onSubmit} className={'flex space-x-4'}>
                         <div className={'relative w-full'}>
                             <Input
                                 placeholder={'URL to shorten'}
@@ -72,7 +66,7 @@ export default function Dashboard({ links }: { links: Links }) {
                                 className={
                                     'absolute right-0 top-0 h-full overflow-hidden px-2 py-2 text-input transition duration-150 hover:text-primary'
                                 }
-                                onClick={handlePast}
+                                onClick={handleToast}
                                 type={'button'}
                             >
                                 <ClipboardIcon className={'size-4'} />
