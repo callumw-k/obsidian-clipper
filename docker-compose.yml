@@ -65,6 +65,15 @@ services:
             - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
         networks:
             - sail
+    chromium:
+        image: zenika/alpine-chrome
+        command: [ chromium-browser, "--headless", "--disable-gpu", "--remote-debugging-address=0.0.0.0", "--remote-debugging-port=9222" ]
+        cap_add:
+            - SYS_ADMIN
+        networks:
+            - sail
+        ports:
+            - '9222:9222'
 networks:
     sail:
         driver: bridge

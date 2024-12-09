@@ -7,6 +7,9 @@ services:
         APP_URL: ${APP_URL}
         REVERB_APP_KEY: ${REVERB_APP_KEY}
         REVERB_HOST: ${REVERB_HOST}
+    healthcheck:
+      test: [ "CMD", "curl --insecure --silent --location --show-error --fail http://localhost:8080$HEALTHCHECK_PATH" ]
+      start_period: 10s
     environment:
       PHP_OPCACHE_ENABLE: 1
       AUTORUN_ENABLED: true
