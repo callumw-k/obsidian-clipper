@@ -7,6 +7,8 @@ services:
         APP_URL: ${APP_URL}
         REVERB_APP_KEY: ${REVERB_APP_KEY}
         VITE_REVERB_HOST: ${VITE_REVERB_HOST}
+    ports:
+      - "80:8080"
     environment:
       PHP_OPCACHE_ENABLE: 1
       AUTORUN_ENABLED: true
@@ -25,7 +27,7 @@ services:
       PHP_OPCACHE_ENABLE: 1
       AUTORUN_ENABLED: false
       LOG_CHANNEL: stderr
-    command: [ "php", "/var/www/html/artisan", "--port=8082", "reverb:start" ]
+    command: [ "php", "/var/www/html/artisan", "reverb:start" ]
     stop_signal: SIGTERM
     healthcheck:
       test: [ "CMD", "healthcheck-reverb" ]
