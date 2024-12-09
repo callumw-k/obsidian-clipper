@@ -1,8 +1,6 @@
 services:
   php:
     image: php-app:latest
-    networks:
-      - chromium_net
     build:
       context: .
       args:
