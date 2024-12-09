@@ -40,6 +40,9 @@ services:
     depends_on:
       - php
     image: php-app:latest
+    environment:
+      PHP_OPCACHE_ENABLE: 1
+      LOG_CHANNEL: stderr
     command: [ "php", "/var/www/html/artisan", "queue:work", "--tries=3" ]
     stop_signal: SIGTERM
     volumes:
