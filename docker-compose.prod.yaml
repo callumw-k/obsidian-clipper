@@ -8,16 +8,39 @@ services:
         REVERB_APP_KEY: ${REVERB_APP_KEY}
         REVERB_HOST: ${REVERB_HOST}
     environment:
-      - PHP_OPCACHE_ENABLE=1
-      - AUTORUN_ENABLED=true
-      - SERVICE_FQDN_SERVER=https://cwk.sh
-      - _APP_URL=${SERVICE_FQDN_SERVER}
-      - SERVICE_FQDN_SERVER_8080=${SERVICE_FQDN_SERVER}
+      PHP_OPCACHE_ENABLE: 1
+      AUTORUN_ENABLED: true
+      SERVICE_FQDN_SERVER: https://cwk.sh
+      _APP_URL: ${SERVICE_FQDN_SERVER}
+      SERVICE_FQDN_SERVER_8080: "${SERVICE_FQDN_SERVER}:8080"
     volumes:
       - "storage_private:/var/www/html/storage/app/private/"
       - "storage_public:/var/www/html/storage/app/public/"
       - "storage_sessions:/var/www/html/storage/framework/sessions"
       - "storage_logs:/var/www/html/storage/logs"
+
+
+  reverb:
+    depends_on:
+      - php
+    image: php-app:latest
+    environment:
+      PHP_OPCACHE_ENABLE: 1
+      AUTORUN_ENABLED: false
+      LOG_CHANNEL: stderr
+      SERVICE_REVERB_SERVER: https://reverb.cwk.sh
+      _APP_URL: ${SERVICE_REVERB_SERVER}
+      SERVICE_REVERB_SERVER_8000: "${SERVICE_REVERB_SERVER}:8000"
+    command: [ "php", "/var/www/html/artisan", "--port=8000", "reverb:start" ]
+    stop_signal: SIGTERM
+    healthcheck:
+      test: [ "CMD", "healthcheck-reverb" ]
+      start_period: 10s
+    volumes:
+      - "reverb_storage_private:/var/www/html/storage/app/private/"
+      - "reverb_storage_public:/var/www/html/storage/app/public/"
+      - "reverb_storage_sessions:/var/www/html/storage/framework/sessions"
+      - "reverb_storage_logs:/var/www/html/storage/logs"
 
 volumes:
   certificates:
@@ -25,3 +48,7 @@ volumes:
   storage_public:
   storage_sessions:
   storage_logs:
+  reverb_storage_private:
+  reverb_storage_public:
+  reverb_storage_sessions:
+  reverb_storage_logs:
