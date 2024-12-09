@@ -1,15 +1,15 @@
 services:
-  php:
+  reverb:
     image: php-app:latest
-    build:
-      context: .
-      args:
-        APP_URL: ${APP_URL}
-        REVERB_APP_KEY: ${REVERB_APP_KEY}
-        REVERB_HOST: ${REVERB_HOST}
     environment:
       PHP_OPCACHE_ENABLE: 1
-      AUTORUN_ENABLED: true
+      AUTORUN_ENABLED: false
+      LOG_CHANNEL: stderr
+    command: [ "php", "/var/www/html/artisan", "--port=8000", "reverb:start" ]
+    stop_signal: SIGTERM
+    healthcheck:
+      test: [ "CMD", "healthcheck-reverb" ]
+      start_period: 10s
     volumes:
       - "storage_private:/var/www/html/storage/app/private/"
       - "storage_public:/var/www/html/storage/app/public/"
@@ -17,7 +17,6 @@ services:
       - "storage_logs:/var/www/html/storage/logs"
 
 volumes:
-  certificates:
   storage_private:
   storage_public:
   storage_sessions:
