@@ -10,6 +10,12 @@ services:
     environment:
       PHP_OPCACHE_ENABLE: 1
       AUTORUN_ENABLED: true
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost/up" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     volumes:
       - "storage_private:/var/www/html/storage/app/private/"
       - "storage_public:/var/www/html/storage/app/public/"
@@ -52,15 +58,15 @@ services:
       start_period: 10s
 
 
-  chromium:
-    image: zenika/alpine-chrome
-    command: [ chromium-browser, "--headless", "--disable-gpu", "--remote-debugging-address=0.0.0.0", "--remote-debugging-port=9222" ]
-    exclude_from_hc: true
-    cap_add:
-      - SYS_ADMIN
-    networks:
-      chromium_net:
-        ipv4_address: 172.99.0.100
+#  chromium:
+#    image: zenika/alpine-chrome
+#    command: [ chromium-browser, "--headless", "--disable-gpu", "--remote-debugging-address=0.0.0.0", "--remote-debugging-port=9222" ]
+#    exclude_from_hc: true
+#    cap_add:
+#      - SYS_ADMIN
+#    networks:
+#      chromium_net:
+#        ipv4_address: 172.99.0.100
 
 networks:
   chromium_net:
