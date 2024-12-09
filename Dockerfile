@@ -89,6 +89,12 @@ RUN echo "user = www-data" >> /usr/local/etc/php-fpm.d/docker-php-serversideup-p
 FROM base AS deploy
 WORKDIR /var/www/html
 
+COPY --from=node:lts-alpine /usr/local/bin /usr/local/bin
+COPY --from=node:lts-alpine /usr/local/lib /usr/local/lib
+COPY --from=node:lts-alpine /usr/lib /usr/lib
+
+RUN npm install -g puppeteer
+
 COPY --from=node --chown=www-data:www-data /app/public/build ./public/build
 COPY --from=composer --chown=www-data:www-data /app/vendor ./vendor
 
