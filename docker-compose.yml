@@ -6,7 +6,6 @@ services:
             args:
                 WWWGROUP: '${WWWGROUP}'
         image: 'sail-8.4/app'
-        #        command: [ "php", "/var/www/html/artisan", "reverb:start" ]
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         ports:
@@ -23,12 +22,12 @@ services:
             - '.:/var/www/html'
         networks:
             - sail
-            - chro
+        #            - chro
         depends_on:
             - pgsql
             - memcached
             - mailpit
-            - chromium
+    #            - chromium
     pgsql:
         image: 'postgres:17'
         ports:

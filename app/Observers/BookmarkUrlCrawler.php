@@ -2,6 +2,8 @@
 
 namespace App\Observers;
 
+use App\Events\LinkImageUpdated;
+use App\Models\Link;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -13,19 +15,22 @@ use Symfony\Component\DomCrawler\Crawler;
 class BookmarkUrlCrawler extends CrawlObserver
 {
 
-    private $content;
+    public string $title = '';
+    public string $image_url = '';
+    public Link $link;
 
-    public function __construct()
+    public function __construct($link)
     {
-        $this->content = null;
+        $this->link = $link;
     }
+
 
     /*
      * Called when the crawler will crawl the url.
      */
     public function willCrawl(UriInterface $url, ?string $linkText): void
     {
-        Log::info('willCrawl', ['url' => $url]);
+        Log::info('Starting crawler', ['url' => $url]);
     }
 
     /*
@@ -38,11 +43,10 @@ class BookmarkUrlCrawler extends CrawlObserver
         ?string           $linkText = null,
     ): void
     {
-        Log::info("Crawled: {$url}");
+        Log::withContext(['url' => $url]);
         $html = $response->getBody();
-        $value = $this->getTitleAndImageForUrl($html, $url);
-        Log::info("Crawled: {$value['title']}");
-
+        Log::info('Processing title and image');
+        $this->processTitleAndImage($html, $url);
     }
 
     /*
@@ -56,7 +60,6 @@ class BookmarkUrlCrawler extends CrawlObserver
     ): void
     {
         Log::error("Failed: {$url}");
-        Log::error($requestException);
     }
 
     /*
@@ -64,10 +67,17 @@ class BookmarkUrlCrawler extends CrawlObserver
      */
     public function finishedCrawling(): void
     {
-        Log::info("Finished crawling");
+        Log::info("Updating database");
+        $success = $this->link->update(['title' => $this->title, 'image' => $this->image_url]);
+        if ($success) {
+            Log::info("Attempting to dispatch event", ['link', $this->link]);
+            event(new LinkImageUpdated($this->link));
+        } else {
+            Log::error("Failed to update link");
+        }
     }
 
-    public function getTitleAndImageForUrl(string $html, string $url): array
+    public function processTitleAndImage(string $html, string $url): void
     {
 
         $crawler = new Crawler($html);
@@ -104,10 +114,9 @@ class BookmarkUrlCrawler extends CrawlObserver
             $image = $favicon;
         }
 
-        return [
-            'title' => $title,
-            'image_url' => $image,
-        ];
+        $this->title = $title;
+        $this->image_url = $image;
+
     }
 
 }

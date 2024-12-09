@@ -6,7 +6,6 @@ use App\Models\Link;
 use App\Observers\BookmarkUrlCrawler;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Spatie\Browsershot\Browsershot;
 use Spatie\Crawler\Crawler;
 
 class CrawlUrlJob implements ShouldQueue
@@ -28,14 +27,12 @@ class CrawlUrlJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $browser = Browsershot::url($this->link->original_url)
-            ->setRemoteInstance('172.99.0.100', '9222');
+//        $browser = Browsershot::url($this->link->original_url)
+//            ->setRemoteInstance('172.99.0.100', '9222');
 
-        Crawler::create()->setCrawlObserver(new BookmarkUrlCrawler())
-            ->setBrowsershot($browser)
+        Crawler::create()->setCrawlObserver(new BookmarkUrlCrawler($this->link))
             ->setMaximumDepth(0)
-            ->executeJavaScript()
-            ->ignoreRobots()
+            ->setUserAgent('FacebookExternalHit/1.1')
             ->setTotalCrawlLimit(1)
             ->startCrawling($this->link->original_url);
     }

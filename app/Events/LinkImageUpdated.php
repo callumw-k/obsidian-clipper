@@ -5,10 +5,11 @@ namespace App\Events;
 use App\Models\Link;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Log;
+use Illuminate\Support\Facades\Log;
 
 class LinkImageUpdated implements ShouldBroadcast
 {
+
     public Link $link;
 
     public function __construct($link)
@@ -18,21 +19,22 @@ class LinkImageUpdated implements ShouldBroadcast
 
     public function broadcastOn(): PrivateChannel
     {
-        // Broadcast to the user's private channel
-        return new PrivateChannel('App.Models.User.' . $this->link->user_id);
+        Log::info('Broadcasting on channel:', ['channel' => 'App.Models.User' . $this->link->user_id, 'data' => $this->link]);
+        return new PrivateChannel('App.Models.User' . $this->link->user_id);
     }
 
-    /**
-     * Get the data to broadcast.
-     *
-     * @return array<string, mixed>
-     */
+//    /**
+//     * Get the data to broadcast.
+//     *
+//     * @return array<string, mixed>
+//     */
     public function broadcastWith(): array
     {
-        Log::info('Broadcasting Link Image Updated');
-        return [
+        $payload = [
             'linkId' => $this->link->id,
             'link' => $this->link,
         ];
+        Log::info('Broadcast payload:', $payload);
+        return $payload;
     }
 }
