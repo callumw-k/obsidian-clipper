@@ -36,7 +36,7 @@ function LinkItem({ link }: { link: Link }) {
     return (
         <div
             className={
-                'grid grid-rows-[10rem_1fr] gap-4 sm:grid-rows-[12rem_1fr] md:grid-cols-[minmax(0,8rem),1fr] md:grid-rows-1'
+                'grid grid-rows-[10rem_1fr] rounded-md border border-border sm:grid-rows-[12rem_1fr] md:grid-cols-[minmax(0,8rem),1fr] md:grid-rows-1'
             }
             key={link.id}
         >
@@ -54,29 +54,35 @@ function LinkItem({ link }: { link: Link }) {
             <form
                 onSubmit={handleSubmit}
                 className={
-                    'prose grid min-h-9 max-w-none grid-cols-[2fr,auto] items-center gap-4 dark:prose-invert'
+                    'prose grid min-h-[4.5rem] max-w-none grid-cols-[minmax(0,1fr)_auto] items-center py-2 pl-2 dark:prose-invert md:min-h-0'
                 }
             >
                 {isEditing ? (
-                    <Input
-                        ref={inputRef}
-                        value={data.title}
-                        onChange={(e) => setData('title', e.target.value)}
-                        className={'bg-transparent px-2'}
-                        placeholder={link.title}
-                    />
+                    <div>
+                        <Input
+                            ref={inputRef}
+                            value={data.title}
+                            onChange={(e) => setData('title', e.target.value)}
+                            className={'bg-transparent px-2'}
+                            placeholder={link.title}
+                        />
+                    </div>
                 ) : (
-                    <a
-                        rel="noreferrer"
-                        target={'_blank'}
-                        className={'px-2'}
-                        href={link.original_url}
-                    >
-                        {link.title ?? link.original_url}
-                    </a>
+                    <div>
+                        <a
+                            rel="noreferrer"
+                            target={'_blank'}
+                            className={'px-2'}
+                            href={link.original_url}
+                        >
+                            {link.title ?? link.original_url}
+                        </a>
+                    </div>
                 )}
 
-                <div className={'flex items-center justify-center'}>
+                <div
+                    className={'flex items-center justify-center px-2 md:px-4'}
+                >
                     {isEditing ? (
                         <button
                             key={'submit_button'}
@@ -104,7 +110,7 @@ export default function LinkList({ links }: { links: Links }) {
     return (
         <div
             className={
-                'mx-auto mt-8 grid w-full max-w-7xl gap-4 p-4 md:auto-rows-[minmax(0,4rem)]'
+                'mx-auto mt-8 grid w-full max-w-7xl gap-8 p-4 md:auto-rows-[minmax(0,4rem)]'
             }
         >
             {links.map((link) => (
