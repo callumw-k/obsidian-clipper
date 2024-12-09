@@ -10,9 +10,9 @@ services:
     environment:
       - PHP_OPCACHE_ENABLE=1
       - AUTORUN_ENABLED=true
-      - SERVICE_FQDN_SERVER="https://cwk.sh"
-      - _APP_URL="${SERVICE_FQDN_SERVER}"
-      - SERVICE_FQDN_SERVER_8080
+      - SERVICE_FQDN_SERVER=https://cwk.sh
+      - _APP_URL=${SERVICE_FQDN_SERVER}
+      - SERVICE_FQDN_SERVER_8080=${SERVICE_FQDN_SERVER}
     volumes:
       - "storage_private:/var/www/html/storage/app/private/"
       - "storage_public:/var/www/html/storage/app/public/"
