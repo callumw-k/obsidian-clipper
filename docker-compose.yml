@@ -1,7 +1,7 @@
 services:
     laravel.test:
         build:
-            context: './vendor/laravel/sail/runtimes/8.4'
+            context: './docker/8.4'
             dockerfile: Dockerfile
             args:
                 WWWGROUP: '${WWWGROUP}'
@@ -23,10 +23,12 @@ services:
             - '.:/var/www/html'
         networks:
             - sail
+            - chro
         depends_on:
             - pgsql
             - memcached
             - mailpit
+            - chromium
     pgsql:
         image: 'postgres:17'
         ports:
@@ -38,7 +40,7 @@ services:
             POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
         volumes:
             - 'sail-pgsql:/var/lib/postgresql/data'
-            - './vendor/laravel/sail/database/pgsql/create-testing-database.sql:/docker-entrypoint-initdb.d/10-create-testing-database.sql'
+            - './docker/pgsql/create-testing-database.sql:/docker-entrypoint-initdb.d/10-create-testing-database.sql'
         networks:
             - sail
         healthcheck:
@@ -71,12 +73,17 @@ services:
         cap_add:
             - SYS_ADMIN
         networks:
-            - sail
-        ports:
-            - '9222:9222'
+            chro:
+                ipv4_address: 172.99.0.100
+
 networks:
     sail:
         driver: bridge
+    chro:
+        ipam:
+            driver: default
+            config:
+                -   subnet: "172.99.0.0/24"
 volumes:
     sail-pgsql:
         driver: local

@@ -29,10 +29,7 @@ class CrawlUrlJob implements ShouldQueue
     public function handle(): void
     {
         $browser = Browsershot::url($this->link->original_url)
-            ->setRemoteInstance('chromium', '9222')
-            ->waitUntilNetworkIdle()
-            ->showBackground()
-            ->setOption('viewport', ['width' => 1920, 'height' => 1080]);
+            ->setRemoteInstance('172.99.0.100', '9222');
 
         Crawler::create()->setCrawlObserver(new BookmarkUrlCrawler())
             ->setBrowsershot($browser)

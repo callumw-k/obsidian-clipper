@@ -1,6 +1,9 @@
 services:
   php:
     image: php-app:latest
+    networks:
+      - default
+      - chromium_net
     build:
       context: .
       args:
@@ -53,6 +56,23 @@ services:
     healthcheck:
       test: [ "CMD", "healthcheck-queue" ]
       start_period: 10s
+
+
+  chromium:
+    image: zenika/alpine-chrome
+    command: [ chromium-browser, "--headless", "--disable-gpu", "--remote-debugging-address=0.0.0.0", "--remote-debugging-port=9222" ]
+    cap_add:
+      - SYS_ADMIN
+    networks:
+      chromium_net:
+        ipv4_address: 172.99.0.100
+
+networks:
+  chromium_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.99.0.0/24"
 
 volumes:
   certificates:
