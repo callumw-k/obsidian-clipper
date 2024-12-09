@@ -3,9 +3,10 @@ import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { User } from '@/types';
 import { ClipboardIcon } from '@heroicons/react/24/outline';
 import { Head, useForm } from '@inertiajs/react';
-import { FormEvent } from 'react';
+import { FormEvent, useEffect } from 'react';
 import { z } from 'zod';
 
 export type Link = {
@@ -18,21 +19,23 @@ export type Link = {
 
 export type Links = Link[];
 
-export default function Dashboard({ links }: { links: Links }) {
+export default function Dashboard({
+    links,
+    user,
+}: {
+    links: Links;
+    user?: User;
+}) {
     const { post, data, setData, reset } = useForm({
         original_url: '',
     });
 
     async function onSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        handlePost();
+        post('/links', { onSuccess: () => reset() });
     }
 
     const { toast } = useToast();
-
-    function handlePost() {
-        post('/links', { onSuccess: () => reset() });
-    }
 
     async function handleToast() {
         const text = await navigator.clipboard.readText();
@@ -47,6 +50,27 @@ export default function Dashboard({ links }: { links: Links }) {
             duration: 1000,
         });
     }
+
+    useEffect(() => {
+        if (!user?.id) {
+            return;
+        }
+        console.debug(user.id);
+        const channel = window.Echo.private(`App.Models.User.${user.id}`);
+
+        channel.listen(
+            'LinkImageUpdated',
+            (event: { linkId: number; link: Link }) => {
+                console.log('Link updated:', event.link);
+            },
+        );
+
+        // Cleanup on component unmount
+        return () => {
+            channel.stopListening('LinkImageUpdated');
+            window.Echo.leaveChannel(`private-App.Models.User.${user.id}`);
+        };
+    }, [user?.id]);
 
     return (
         <AuthenticatedLayout>

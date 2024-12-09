@@ -18,8 +18,9 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    $links = Auth::user()->links()->orderByDesc('created_at')->get(['title', 'original_url', 'path', 'id', 'created_at', 'image']);
-    return Inertia::render('Dashboard', ['links' => $links]);
+    $user = Auth::user();
+    $links = $user->links()->orderByDesc('created_at')->get(['title', 'original_url', 'path', 'id', 'created_at', 'image']);
+    return Inertia::render('Dashboard', ['links' => $links, 'user' => $user]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

@@ -36,6 +36,18 @@ services:
       - "reverb_storage_sessions:/var/www/html/storage/framework/sessions"
       - "reverb_storage_logs:/var/www/html/storage/logs"
 
+  queue:
+    depends_on:
+      - php
+    image: php-app:latest
+    command: [ "php", "/var/www/html/artisan", "queue:work", "--tries=3" ]
+    stop_signal: SIGTERM
+    volumes:
+      - "queue_storage_logs:/var/www/html/storage/logs"
+    healthcheck:
+      test: [ "CMD", "healthcheck-queue" ]
+      start_period: 10s
+
 volumes:
   certificates:
   storage_private:
@@ -47,3 +59,5 @@ volumes:
   reverb_storage_public:
   reverb_storage_sessions:
   reverb_storage_logs:
+
+  queue_storage_logs:

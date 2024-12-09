@@ -33,22 +33,6 @@ function LinkItem({ link }: { link: Link }) {
         }
     }, [isEditing]);
 
-    useEffect(() => {
-        // Subscribe to the private channel
-        const channel = window.Echo.private(`links.${link.id}`);
-
-        // Listen for the OrderShipmentStatusUpdated event
-        channel.listen('LinkImageUpdated', (event: { link: Link }) => {
-            console.log('Link updated:', event.link);
-        });
-
-        // Cleanup subscription on component unmount
-        return () => {
-            channel.stopListening('LinkImageUpdated');
-            window.Echo.leaveChannel(`links.${link.id}`);
-        };
-    }, [link.id]);
-
     return (
         <div
             className={
