@@ -6,7 +6,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { User } from '@/types';
 import { ClipboardIcon } from '@heroicons/react/24/outline';
 import { Head, useForm } from '@inertiajs/react';
-import { FormEvent, useEffect } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { z } from 'zod';
 
 export type Link = {
@@ -26,13 +26,19 @@ export default function Dashboard({
     links: Links;
     user?: User;
 }) {
+    const [stateLinks, setLinks] = useState<Links>(links);
+
     const { post, data, setData, reset } = useForm({
         original_url: '',
     });
 
     async function onSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        post('/links', { onSuccess: () => reset() });
+        post('/links', {
+            onSuccess: () => {
+                reset();
+            },
+        });
     }
 
     const { toast } = useToast();
@@ -52,6 +58,10 @@ export default function Dashboard({
     }
 
     useEffect(() => {
+        setLinks(links);
+    }, [links]);
+
+    useEffect(() => {
         if (!user?.id) {
             return;
         }
@@ -61,11 +71,14 @@ export default function Dashboard({
         channel.listen(
             'LinkImageUpdated',
             (event: { linkId: number; link: Link }) => {
-                console.log('Link updated:', event.link);
+                setLinks((prevLinks) =>
+                    prevLinks.map((link) =>
+                        link.id === event.linkId ? event.link : link,
+                    ),
+                );
             },
         );
 
-        // Cleanup on component unmount
         return () => {
             channel.stopListening('LinkImageUpdated');
             window.Echo.leaveChannel(`private-App.Models.User.${user.id}`);
@@ -100,7 +113,7 @@ export default function Dashboard({
                     </form>
                 </div>
             </div>
-            <LinkList links={links} />
+            <LinkList links={stateLinks} />
         </AuthenticatedLayout>
     );
 }
