@@ -11,7 +11,7 @@ services:
       PHP_OPCACHE_ENABLE: 1
       AUTORUN_ENABLED: true
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost/up" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/up" ]
       interval: 30s
       timeout: 5s
       retries: 3
