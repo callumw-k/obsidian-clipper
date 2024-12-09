@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Events\LinkImageUpdated;
+use App\Jobs\CrawlUrlJob;
 use App\Repositories\LinkRepository;
 use Illuminate\Support\Str;
 
@@ -34,10 +34,8 @@ class LinkService
             'user_id' => $userId,
         ]);
 
-        event(new LinkImageUpdated($link));
 
-
-//        CrawlUrlJob::dispatch($link);
+        CrawlUrlJob::dispatch($link);
 
         return $link;
     }

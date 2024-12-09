@@ -55,7 +55,7 @@ export default function Dashboard({
         if (!user?.id) {
             return;
         }
-        console.debug(user.id);
+
         const channel = window.Echo.private(`App.Models.User.${user.id}`);
 
         channel.listen(

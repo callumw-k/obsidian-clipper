@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Constants\ChannelNames;
 use App\Models\Link;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -19,8 +20,8 @@ class LinkImageUpdated implements ShouldBroadcast
 
     public function broadcastOn(): PrivateChannel
     {
-        Log::info('Broadcasting on channel:', ['channel' => 'App.Models.User' . $this->link->user_id, 'data' => $this->link]);
-        return new PrivateChannel('App.Models.User' . $this->link->user_id);
+        Log::info('Broadcasting on channel:', ['channel' => ChannelNames::USER_CHANNEL . $this->link->user_id, 'data' => $this->link]);
+        return new PrivateChannel(ChannelNames::USER_CHANNEL . $this->link->user_id);
     }
 
 //    /**
