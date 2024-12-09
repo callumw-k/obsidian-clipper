@@ -25,7 +25,7 @@ services:
       PHP_OPCACHE_ENABLE: 1
       AUTORUN_ENABLED: false
       LOG_CHANNEL: stderr
-    command: [ "php", "/var/www/html/artisan", "--port=8000", "reverb:start" ]
+    command: [ "php", "/var/www/html/artisan", "--port=8000", "reverb:start --debug" ]
     stop_signal: SIGTERM
     healthcheck:
       test: [ "CMD", "healthcheck-reverb" ]
