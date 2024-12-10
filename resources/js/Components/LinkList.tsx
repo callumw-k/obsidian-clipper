@@ -28,9 +28,6 @@ function LinkItem({ link }: { link: Link }) {
         }
         put(`/links/${link.id}`, {
             preserveScroll: true,
-            onSuccess: () => {
-                setIsEditing(!isEditing);
-            },
         });
     };
 
@@ -39,6 +36,7 @@ function LinkItem({ link }: { link: Link }) {
     useEffect(() => {
         if (link.title !== data.title && link.title) {
             setData('title', link.title);
+            setIsEditing(false);
         }
     }, [link.title]);
 
@@ -73,7 +71,7 @@ function LinkItem({ link }: { link: Link }) {
     return (
         <div
             className={
-                'grid grid-rows-[10rem_1fr] justify-between rounded-md border border-border sm:grid-rows-[12rem_1fr] md:grid-cols-[minmax(0,8rem),1fr] md:grid-rows-1'
+                'grid grid-cols-1 grid-rows-[10rem_1fr] justify-between rounded-md border border-border sm:grid-rows-[12rem_1fr] md:grid-cols-[minmax(0,8rem),1fr] md:grid-rows-1'
             }
             key={link.id}
         >
@@ -178,7 +176,7 @@ function LinkItem({ link }: { link: Link }) {
                         <button
                             key={'edit_button'}
                             type={'button'}
-                            onClick={() => setIsEditing(true)}
+                            onClick={() => setIsEditing(!isEditing)}
                         >
                             <PencilSquareIcon className={'size-4'} />
                         </button>
