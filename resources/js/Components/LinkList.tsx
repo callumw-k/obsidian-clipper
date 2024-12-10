@@ -6,6 +6,10 @@ import React, { useEffect, useRef, useState } from 'react';
 
 function LinkItem({ link }: { link: Link }) {
     const [isEditing, setIsEditing] = useState(false);
+    const [imageStatus, setImageStatus] = useState({
+        loaded: false,
+        success: true,
+    });
 
     const { data, put, setData, processing } = useForm({
         title: link.title ?? '',
@@ -20,11 +24,18 @@ function LinkItem({ link }: { link: Link }) {
             return;
         }
         put(`/links/${link.id}`, {
+            preserveScroll: true,
             onSuccess: () => {
                 setIsEditing(!isEditing);
             },
         });
     };
+
+    useEffect(() => {
+        if (link.title !== data.title && link.title) {
+            setData('title', link.title);
+        }
+    }, [link.title]);
 
     useEffect(() => {
         if (isEditing) {
@@ -33,6 +44,8 @@ function LinkItem({ link }: { link: Link }) {
         }
     }, [isEditing]);
 
+    console.debug(link.image, imageStatus.success, imageStatus.loaded);
+    const showImage = link.image && imageStatus.success;
     return (
         <div
             className={
@@ -41,13 +54,32 @@ function LinkItem({ link }: { link: Link }) {
             key={link.id}
         >
             <div className={'overflow-hidden rounded-sm'}>
-                {link.image && (
+                <div
+                    style={{
+                        opacity: imageStatus.loaded || !link.image ? 1 : 0,
+                        height: imageStatus.success && link.image ? 0 : '100%',
+                    }}
+                    className={
+                        'h-full bg-gradient-to-r from-indigo-500 transition duration-500'
+                    }
+                />
+                {showImage && (
                     <img
-                        className={
-                            'h-full max-h-full min-h-0 w-full object-cover'
-                        }
-                        src={link.image}
+                        style={{
+                            opacity: imageStatus.loaded ? 1 : 0,
+                            zIndex: imageStatus.success ? 10 : 'initial',
+                        }}
                         alt={link.title}
+                        src={link.image}
+                        onLoad={() =>
+                            setImageStatus({ ...imageStatus, loaded: true })
+                        }
+                        onError={() =>
+                            setImageStatus({ loaded: true, success: false })
+                        }
+                        className={
+                            'relative h-full max-h-full min-h-0 w-full object-cover transition duration-500'
+                        }
                     />
                 )}
             </div>
@@ -68,11 +100,10 @@ function LinkItem({ link }: { link: Link }) {
                         />
                     </div>
                 ) : (
-                    <div>
+                    <div className={'overflow-hidden px-2'}>
                         <a
                             rel="noreferrer"
                             target={'_blank'}
-                            className={'px-2'}
                             href={link.original_url}
                         >
                             {link.title ?? link.original_url}
@@ -81,7 +112,9 @@ function LinkItem({ link }: { link: Link }) {
                 )}
 
                 <div
-                    className={'flex items-center justify-center px-2 md:px-4'}
+                    className={
+                        'flex items-center justify-center px-2 pr-4 md:px-4'
+                    }
                 >
                     {isEditing ? (
                         <button
