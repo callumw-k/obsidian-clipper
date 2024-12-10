@@ -9,6 +9,17 @@ USER root
 RUN install-php-extensions memcached
 
 
+FROM base AS development
+
+ARG USER_ID
+ARG GROUP_ID
+
+USER root
+
+RUN docker-php-serversideup-set-id www-data $USER_ID:$GROUP_ID  && \
+    docker-php-serversideup-set-file-permissions --owner $USER_ID:$GROUP_ID --service nginx
+
+USER www-data
 
 ############################################
 # Composer installs
@@ -24,7 +35,6 @@ COPY bootstrap bootstrap
 COPY storage storage
 COPY routes routes
 RUN composer install --no-dev
-
 
 ############################################
 # Node installs
@@ -57,17 +67,8 @@ RUN npm run build
 ############################################
 # Development Image
 ############################################
-FROM base AS development
 
-ARG USER_ID
-ARG GROUP_ID
 
-USER root
-
-RUN docker-php-serversideup-set-id www-data $USER_ID:$GROUP_ID  && \
-    docker-php-serversideup-set-file-permissions --owner $USER_ID:$GROUP_ID --service nginx
-
-USER www-data
 
 ############################################
 # C/I Install

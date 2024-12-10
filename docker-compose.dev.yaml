@@ -1,0 +1,131 @@
+services:
+  traefik:
+    image: traefik:3.2
+    networks:
+      - development
+    command:
+      - --api.insecure=true
+      - --providers.docker
+      - --entryPoints.web.address=:80
+      - --entryPoints.websecure.address=:443
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  php:
+    image: ${IMAGE_NAME}
+    networks:
+      - development
+    build:
+      context: .
+      target: development
+      args:
+        USER_ID: 1000
+        GROUP_ID: 1000
+    depends_on:
+      - traefik
+      - pgsql
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.laravel.rule=HostRegexp(`localhost`)"
+      - "traefik.http.routers.laravel.entrypoints=web"
+      - "traefik.http.services.laravel.loadbalancer.server.port=8080"
+      - "traefik.http.services.laravel.loadbalancer.server.scheme=http"
+    volumes:
+      - .:/var/www/html
+
+  reverb:
+    depends_on:
+      - php
+      - pgsql
+    image: ${IMAGE_NAME}
+    environment:
+      PHP_OPCACHE_ENABLE: 1
+      AUTORUN_ENABLED: false
+      LOG_CHANNEL: stderr
+    command: [ "php", "/var/www/html/artisan", "reverb:start" ]
+    networks:
+      - development
+    stop_signal: SIGTERM
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.reverb.rule=HostRegexp(`reverb.localhost`)"
+      - "traefik.http.routers.reverb.entrypoints=web"
+      - "traefik.http.services.reverb.loadbalancer.server.port=8080"
+      - "traefik.http.services.reverb.loadbalancer.server.scheme=http"
+    healthcheck:
+      test: [ "CMD", "healthcheck-reverb" ]
+      start_period: 10s
+    volumes:
+      - .:/var/www/html
+
+  queue:
+    image: ${IMAGE_NAME}
+    depends_on:
+      - php
+      - pgsql
+    networks:
+      - development
+    environment:
+      PHP_OPCACHE_ENABLE: 1
+      LOG_CHANNEL: stderr
+    command: [ "php", "/var/www/html/artisan", "queue:work", "--tries=3" ]
+    stop_signal: SIGTERM
+    volumes:
+      - .:/var/www/html
+    healthcheck:
+      test: [ "CMD", "healthcheck-queue" ]
+      start_period: 10s
+
+  pgsql:
+    image: 'postgres:17'
+    networks:
+      - development
+    ports:
+      - "5432:5432"
+    environment:
+      PGPASSWORD: '${DB_PASSWORD:-secret}'
+      POSTGRES_DB: '${DB_DATABASE}'
+      POSTGRES_USER: '${DB_USERNAME}'
+      POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
+    volumes:
+      - 'sail-pgsql:/var/lib/postgresql/data'
+
+
+  # node:
+  #   image: node:lts
+  #   networks:
+  #     - development
+  #   working_dir: /app
+  #   volumes:
+  #     - .:/app
+  #   command: >
+  #     sh -c "
+  #     npm install &&
+  #     npm run dev
+  #     "
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.node.rule=HostRegexp(`localhost`)"
+  #     - "traefik.http.routers.node.entrypoints=web"
+  #     - "traefik.http.services.node.loadbalancer.server.port=5173"
+  #     - "traefik.http.services.node.loadbalancer.server.scheme=http"
+  #   environment:
+  #     NODE_ENV: development
+  #     # APP_URL: http://php
+  #   depends_on:
+  #     - php
+
+networks:
+  development:
+  chromium_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.99.0.0/24"
+
+volumes:
+  sail-pgsql:
+    driver: local
