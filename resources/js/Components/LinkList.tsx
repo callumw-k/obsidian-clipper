@@ -1,5 +1,7 @@
 import { Input } from '@/Components/ui/input';
+import { useToast } from '@/hooks/use-toast';
 import { Link, Links } from '@/Pages/Dashboard';
+import { ClipboardIcon } from '@heroicons/react/24/outline';
 import { CheckIcon, PencilSquareIcon } from '@heroicons/react/24/solid';
 import { useForm } from '@inertiajs/react';
 import React, { useEffect, useRef, useState } from 'react';
@@ -30,6 +32,8 @@ function LinkItem({ link }: { link: Link }) {
             },
         });
     };
+
+    const { toast } = useToast();
 
     useEffect(() => {
         if (link.title !== data.title && link.title) {
@@ -100,14 +104,37 @@ function LinkItem({ link }: { link: Link }) {
                         />
                     </div>
                 ) : (
-                    <div className={'overflow-hidden px-2'}>
-                        <a
-                            rel="noreferrer"
-                            target={'_blank'}
-                            href={link.original_url}
+                    <div
+                        className={
+                            'flex flex-col overflow-hidden px-2 md:flex-row md:items-center md:justify-between'
+                        }
+                    >
+                        <div className={'max-w-5xl overflow-hidden'}>
+                            <a
+                                rel="noreferrer"
+                                className={'md:text-nowrap'}
+                                target={'_blank'}
+                                href={link.original_url}
+                            >
+                                {link.title ?? link.original_url}
+                            </a>
+                        </div>
+                        <button
+                            // key={`copy_button_${link.path}`}
+                            onClick={async () => {
+                                await navigator.clipboard.writeText(
+                                    `https://cwk.sh/${link.path}`,
+                                );
+                                toast({ title: 'Copied to clipboard' });
+                            }}
+                            type={'button'}
+                            className={
+                                'm-0 flex flex-shrink-0 flex-row items-center gap-2 text-xs md:ml-4'
+                            }
                         >
-                            {link.title ?? link.original_url}
-                        </a>
+                            https://cwk.sh/{link.path}
+                            <ClipboardIcon className={'size-3'} />
+                        </button>
                     </div>
                 )}
 
