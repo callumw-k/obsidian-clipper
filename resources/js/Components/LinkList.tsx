@@ -18,12 +18,16 @@ function LinkItem({ link }: { link: Link }) {
         title: link.title ?? '',
     });
 
+    const { toast } = useToast();
+
     const inputRef = useRef<HTMLInputElement | null>(null);
+
+    const dynamicRef = useRef<HTMLSpanElement | null>(null);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (link.title === data.title) {
-            setIsEditing(!isEditing);
+            setIsEditing(false);
             return;
         }
         put(`/links/${link.id}`, {
@@ -31,16 +35,12 @@ function LinkItem({ link }: { link: Link }) {
         });
     };
 
-    const { toast } = useToast();
-
     useEffect(() => {
         if (link.title !== data.title && link.title) {
             setData('title', link.title);
-            setIsEditing(false);
         }
+        if (isEditing) setIsEditing(false);
     }, [link.title]);
-
-    const dynamicRef = useRef<HTMLSpanElement | null>(null);
 
     useEffect(() => {
         if (isEditing) {
