@@ -20,4 +20,9 @@ class LinkRepository
     {
         return Link::where('path', $path)->first();
     }
+
+    public function links_by_user_id(int $userId, ?array $filter = ['*']): ?array
+    {
+        return Link::where('user_id', $userId)->orderByDesc('created_at')->get($filter);
+    }
 }

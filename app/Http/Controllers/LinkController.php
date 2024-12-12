@@ -17,11 +17,11 @@ class LinkController extends Controller
         $this->linkService = $linkService;
     }
 
-    public function index()
+
+    public function api_index()
     {
-        return Inertia::render('Dashboard', [
-            'links' => Link::all(),
-        ]);
+        $user_id = Auth::id();
+        return $this->linkService->links_by_user_id($user_id);
     }
 
     public function update(Request $request, int $id)
@@ -34,7 +34,7 @@ class LinkController extends Controller
 
 
         $update = $this->linkService->update($id, $validated);
-       
+
         if ($update) {
             return to_route('dashboard')->with('success', 'Link updated successfully.');
         }

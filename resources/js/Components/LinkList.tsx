@@ -115,9 +115,9 @@ function LinkItem({ link }: { link: Link }) {
                     <div>
                         <Input
                             ref={inputRef}
-                            style={{
-                                width: `calc(${(inputWidth ?? initialWidth ?? 48) / 16}rem + 1rem)`,
-                            }}
+                            // style={{
+                            //     width: `calc(${(inputWidth ?? initialWidth ?? 48) / 16}rem + 1rem)`,
+                            // }}
                             value={data.title}
                             onChange={(e) => setData('title', e.target.value)}
                             className={'min-w-0 bg-transparent px-2'}

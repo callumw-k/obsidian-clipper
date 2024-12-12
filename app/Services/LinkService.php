@@ -21,6 +21,11 @@ class LinkService
 
     }
 
+    public function links_by_user_id(int $userId, ?array $filter = []): array
+    {
+        return $this->repository->Links_by_user_id($userId, $filter);
+    }
+
     public function createLink(array $data, int $userId)
     {
         do {
