@@ -4,11 +4,10 @@ import { Link, Links } from '@/Pages/Dashboard';
 import { ClipboardIcon } from '@heroicons/react/24/outline';
 import { CheckIcon, PencilSquareIcon } from '@heroicons/react/24/solid';
 import { useForm } from '@inertiajs/react';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 function LinkItem({ link }: { link: Link }) {
     const [isEditing, setIsEditing] = useState(false);
-    const [initialWidth, setInitialWidth] = useState<number | undefined>();
     const [imageStatus, setImageStatus] = useState({
         loaded: false,
         success: true,
@@ -21,8 +20,6 @@ function LinkItem({ link }: { link: Link }) {
     const { toast } = useToast();
 
     const inputRef = useRef<HTMLInputElement | null>(null);
-
-    const dynamicRef = useRef<HTMLSpanElement | null>(null);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -46,26 +43,8 @@ function LinkItem({ link }: { link: Link }) {
         if (isEditing) {
             inputRef.current?.focus();
             inputRef.current?.select();
-
-            dynamicRef.current = document.createElement('span');
-            dynamicRef.current.innerHTML = data.title;
-            document.body.appendChild(dynamicRef.current);
-            setInitialWidth(dynamicRef.current.getBoundingClientRect().width);
         }
-        return () => {
-            if (dynamicRef.current)
-                document.body.removeChild(dynamicRef.current);
-
-            dynamicRef.current = null;
-        };
     }, [isEditing]);
-
-    const inputWidth = useMemo(() => {
-        if (dynamicRef.current) {
-            dynamicRef.current.innerText = data.title;
-            return dynamicRef.current.getBoundingClientRect().width;
-        }
-    }, [dynamicRef.current, data.title]);
 
     const showImage = link.image && imageStatus.success;
     return (
@@ -115,9 +94,6 @@ function LinkItem({ link }: { link: Link }) {
                     <div>
                         <Input
                             ref={inputRef}
-                            // style={{
-                            //     width: `calc(${(inputWidth ?? initialWidth ?? 48) / 16}rem + 1rem)`,
-                            // }}
                             value={data.title}
                             onChange={(e) => setData('title', e.target.value)}
                             className={'min-w-0 bg-transparent px-2'}
