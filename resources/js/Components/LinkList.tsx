@@ -1,8 +1,7 @@
-import { Input } from '@/Components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Link, Links } from '@/Pages/Dashboard';
-import { ClipboardIcon } from '@heroicons/react/24/outline';
-import { CheckIcon, PencilSquareIcon } from '@heroicons/react/24/solid';
+import { ClipboardIcon, PencilIcon } from '@heroicons/react/24/outline';
+import { CheckIcon } from '@heroicons/react/24/solid';
 import { useForm } from '@inertiajs/react';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -33,7 +32,7 @@ function LinkItem({ link }: { link: Link }) {
     };
 
     useEffect(() => {
-        if (link.title !== data.title && link.title) {
+        if (link.title && link.title !== data.title) {
             setData('title', link.title);
         }
         if (isEditing) setIsEditing(false);
@@ -49,8 +48,9 @@ function LinkItem({ link }: { link: Link }) {
     const showImage = link.image && imageStatus.success;
     return (
         <div
+            style={{ ...(isEditing && { borderColor: 'white' }) }}
             className={
-                'grid grid-cols-1 grid-rows-[10rem_1fr] justify-between rounded-md border border-border sm:grid-rows-[12rem_1fr] md:grid-cols-[minmax(0,8rem),1fr] md:grid-rows-1'
+                'grid grid-cols-1 grid-rows-[10rem_1fr] justify-between rounded-md border border-border transition duration-300 sm:grid-rows-[12rem_1fr] md:grid-cols-[minmax(0,8rem),1fr] md:grid-rows-1'
             }
             key={link.id}
         >
@@ -92,11 +92,13 @@ function LinkItem({ link }: { link: Link }) {
             >
                 {isEditing ? (
                     <div>
-                        <Input
+                        <input
                             ref={inputRef}
                             value={data.title}
                             onChange={(e) => setData('title', e.target.value)}
-                            className={'min-w-0 bg-transparent px-2'}
+                            className={
+                                'min-w-0 bg-transparent px-2 outline-none'
+                            }
                             placeholder={link.title}
                         />
                     </div>
@@ -141,12 +143,8 @@ function LinkItem({ link }: { link: Link }) {
                     }
                 >
                     {isEditing ? (
-                        <button
-                            key={'submit_button'}
-                            type={'submit'}
-                            className={'size-4'}
-                        >
-                            <CheckIcon className={'size-4'} />
+                        <button key={'submit_button'} type={'submit'}>
+                            <CheckIcon className={'size-6'} />
                         </button>
                     ) : (
                         <button
@@ -154,7 +152,7 @@ function LinkItem({ link }: { link: Link }) {
                             type={'button'}
                             onClick={() => setIsEditing(!isEditing)}
                         >
-                            <PencilSquareIcon className={'size-4'} />
+                            <PencilIcon className={'size-5'} />
                         </button>
                     )}
                 </div>
