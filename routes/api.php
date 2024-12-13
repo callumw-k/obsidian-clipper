@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\LinkController;
+use App\Http\Controllers\LinkApiController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -10,7 +10,9 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::prefix('/links')->middleware('auth:sanctum')->group(function () {
-    Route::get('/', [LinkController::class, 'api_index'])->name('api.links.index');
+    Route::get('/', [LinkApiController::class, 'index'])->name('api.links.index');
+    Route::post('/', [LinkApiController::class, 'store'])->name('api.links.store');
+    Route::get('/{id}', [LinkApiController::class, 'show'])->name('api.links.show');
 });
 
 Route::post('/login', function (Request $request) {

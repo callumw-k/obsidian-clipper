@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreLinkRequest;
 use App\Models\Link;
 use App\Services\LinkService;
 use Auth;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 
 class LinkController extends Controller
 {
@@ -48,12 +48,9 @@ class LinkController extends Controller
         return to_route('dashboard')->with('success', 'Link deleted successfully.');
     }
 
-    public function store(Request $request)
+    public function store(StoreLinkRequest $request)
     {
-        $validated = $request->validate([
-            'original_url' => ['required', 'url'],
-            'title' => ['nullable', 'string', 'max:255'],
-        ]);
+        $validated = $request->validated();
 
         $user_id = Auth::id();
 
@@ -69,6 +66,6 @@ class LinkController extends Controller
         if (!$link) {
             abort(404, 'Shortened URL not found');
         }
-        return redirect($link->original_url);
+        return redirect()->away($link->original_url);
     }
 }

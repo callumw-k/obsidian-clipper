@@ -31,12 +31,9 @@ class LinkService
         }, $links->all());
     }
 
-    public function createLink(array $data, int $userId)
+    public function createLink(array $data, int $userId): Link
     {
-        do {
-            $shortPath = Str::random(6);
-        } while ($this->repository->findByPath($shortPath));
-
+        $shortPath = $this->generateUniquePath();
 
         $link = $this->repository->create([
             'original_url' => $data['original_url'],
@@ -44,10 +41,18 @@ class LinkService
             'user_id' => $userId,
         ]);
 
-
         CrawlUrlJob::dispatch($link);
 
         return $link;
+    }
+
+    private function generateUniquePath(): string
+    {
+        do {
+            $shortPath = Str::random(6);
+        } while ($this->repository->findByPath($shortPath));
+
+        return $shortPath;
     }
 
 

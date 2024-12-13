@@ -1,0 +1,19 @@
+meta {
+  name: Create Link
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{api_url}}/links
+  body: json
+  auth: inherit
+}
+
+headers {
+  : 
+}
+
+body:json {
+  {"original_url": "https://callumwk.com"}
+}

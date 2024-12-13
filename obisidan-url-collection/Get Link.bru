@@ -1,0 +1,19 @@
+meta {
+  name: Get Link
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{api_url}}/links/67
+  body: json
+  auth: inherit
+}
+
+headers {
+  : 
+}
+
+body:json {
+  {"original_url": "https://callumwk.com"}
+}
