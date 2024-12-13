@@ -71,11 +71,19 @@ export default function Dashboard({
         channel.listen(
             'LinkImageUpdated',
             (event: { linkId: number; link: Link }) => {
-                setLinks((prevLinks) =>
-                    prevLinks.map((link) =>
-                        link.id === event.linkId ? event.link : link,
-                    ),
-                );
+                setLinks((prevLinks) => {
+                    const existingIndex = prevLinks.findIndex(
+                        (link) => link.id === event.linkId,
+                    );
+
+                    if (existingIndex !== -1) {
+                        return prevLinks.map((link) =>
+                            link.id === event.linkId ? event.link : link,
+                        );
+                    } else {
+                        return [event.link, ...prevLinks];
+                    }
+                });
             },
         );
 
