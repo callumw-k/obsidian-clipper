@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Link;
+use Illuminate\Database\Eloquent\Collection;
 
 class LinkRepository
 {
@@ -21,8 +22,9 @@ class LinkRepository
         return Link::where('path', $path)->first();
     }
 
-    public function links_by_user_id(int $userId, ?array $filter = ['*']): ?array
+    public function links_by_user_id_by_descending(int $userId): Collection
     {
-        return Link::where('user_id', $userId)->orderByDesc('created_at')->get($filter);
+        return Link::where('user_id', $userId)->orderByDesc('created_at')->get();
     }
+
 }

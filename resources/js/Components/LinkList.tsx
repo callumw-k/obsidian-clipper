@@ -1,9 +1,36 @@
 import { useToast } from '@/hooks/use-toast';
 import { Link, Links } from '@/Pages/Dashboard';
-import { ClipboardIcon, PencilIcon } from '@heroicons/react/24/outline';
+import {
+    ClipboardIcon,
+    PencilIcon,
+    TrashIcon,
+} from '@heroicons/react/24/outline';
 import { CheckIcon } from '@heroicons/react/24/solid';
 import { useForm } from '@inertiajs/react';
 import React, { useEffect, useRef, useState } from 'react';
+
+function DeleteButton({ id }: { id: number }) {
+    const form = useForm({
+        id: id,
+    });
+
+    return (
+        <form
+            onSubmit={(e) => {
+                e.preventDefault();
+                form.delete(`/links/${id}`);
+            }}
+        >
+            <button
+                disabled={form.processing}
+                className={'p-2'}
+                type={'submit'}
+            >
+                <TrashIcon className={'size-5'} />
+            </button>
+        </form>
+    );
+}
 
 function LinkItem({ link }: { link: Link }) {
     const [isEditing, setIsEditing] = useState(false);
@@ -84,14 +111,13 @@ function LinkItem({ link }: { link: Link }) {
                     />
                 )}
             </div>
-            <form
-                onSubmit={handleSubmit}
+            <div
                 className={
                     'prose grid min-h-[4.5rem] max-w-none grid-cols-[minmax(0,1fr)_auto] items-center py-2 pl-2 dark:prose-invert md:min-h-0'
                 }
             >
                 {isEditing ? (
-                    <div>
+                    <form id={'change_title'} onSubmit={handleSubmit}>
                         <input
                             ref={inputRef}
                             value={data.title}
@@ -101,11 +127,11 @@ function LinkItem({ link }: { link: Link }) {
                             }
                             placeholder={link.title}
                         />
-                    </div>
+                    </form>
                 ) : (
                     <div
                         className={
-                            'flex flex-col overflow-hidden px-2 md:flex-row md:items-center md:justify-between'
+                            'flex flex-col overflow-hidden px-2 max-md:gap-2 md:flex-row md:items-center md:justify-between'
                         }
                     >
                         <div className={'max-w-5xl overflow-hidden'}>
@@ -119,7 +145,6 @@ function LinkItem({ link }: { link: Link }) {
                             </a>
                         </div>
                         <button
-                            // key={`copy_button_${link.path}`}
                             onClick={async () => {
                                 await navigator.clipboard.writeText(
                                     `https://cwk.sh/${link.path}`,
@@ -138,25 +163,31 @@ function LinkItem({ link }: { link: Link }) {
                 )}
 
                 <div
-                    className={
-                        'flex items-center justify-center px-2 pr-4 md:px-4'
-                    }
+                    className={'flex items-center justify-center px-2 md:px-4'}
                 >
                     {isEditing ? (
-                        <button key={'submit_button'} type={'submit'}>
+                        <button
+                            form={'change_title'}
+                            key={'submit_button'}
+                            className={'p-2'}
+                            type={'submit'}
+                        >
                             <CheckIcon className={'size-6'} />
                         </button>
                     ) : (
                         <button
                             key={'edit_button'}
                             type={'button'}
+                            className={'p-2'}
                             onClick={() => setIsEditing(!isEditing)}
                         >
                             <PencilIcon className={'size-5'} />
                         </button>
                     )}
+
+                    <DeleteButton id={link.id} />
                 </div>
-            </form>
+            </div>
         </div>
     );
 }

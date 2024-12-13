@@ -42,6 +42,12 @@ class LinkController extends Controller
         return to_route('dashboard')->with('error', 'Unable to update link.');
     }
 
+    public function delete(int $id)
+    {
+        Auth::user()->links()->findOrFail($id)->delete();
+        return to_route('dashboard')->with('success', 'Link deleted successfully.');
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

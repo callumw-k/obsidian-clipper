@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Dtos\LinkDto;
 use App\Jobs\CrawlUrlJob;
+use App\Models\Link;
 use App\Repositories\LinkRepository;
 use Illuminate\Support\Str;
 
@@ -21,9 +23,12 @@ class LinkService
 
     }
 
-    public function links_by_user_id(int $userId, ?array $filter = []): array
+    public function links_by_user_id(int $userId): array
     {
-        return $this->repository->Links_by_user_id($userId, $filter);
+        $links = $this->repository->links_by_user_id_by_descending($userId);
+        return array_map(function (Link $link) {
+            return new LinkDto($link);
+        }, $links->all());
     }
 
     public function createLink(array $data, int $userId)

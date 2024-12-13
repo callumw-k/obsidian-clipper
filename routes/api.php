@@ -14,11 +14,11 @@ Route::prefix('/links')->middleware('auth:sanctum')->group(function () {
 });
 
 Route::post('/login', function (Request $request) {
+
     $validated = $request->validate([
         'email' => 'required',
         'password' => 'required',
     ]);
-
 
     if (!Auth::attempt($validated)) {
         return response()->json([

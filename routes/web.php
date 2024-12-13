@@ -1,9 +1,9 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LinkController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 //Route::get('/', function () {
 //    return Inertia::render('Welcome', [
@@ -17,15 +17,12 @@ Route::get('/', function () {
     return to_route('dashboard');
 });
 
-Route::get('/dashboard', function () {
-    $user = Auth::user();
-    $links = $user->links()->orderByDesc('created_at')->get(['title', 'original_url', 'path', 'id', 'created_at', 'image']);
-    return Inertia::render('Dashboard', ['links' => $links, 'user' => $user]);
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::post('/links', [LinkController::class, 'store'])->name('links.store');
     Route::put('/links/{id}', [LinkController::class, 'update'])->name('links.update');
+    Route::delete('/links/{id}', [LinkController::class, 'delete'])->name('links.destroy');
 });
 
 Route::middleware('auth')->group(function () {
