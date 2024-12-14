@@ -4,14 +4,10 @@ meta {
   seq: 7
 }
 
-get {
-  url: {{api_url}}/links/sync?link_ids=1,2,3
+post {
+  url: {{api_url}}/links/sync
   body: json
   auth: inherit
-}
-
-params:query {
-  link_ids: 1,2,3
 }
 
 headers {
@@ -19,5 +15,5 @@ headers {
 }
 
 body:json {
-  {"original_url": "https://callumwk.com"}
+  {"link_ids": [1,2,3]}
 }

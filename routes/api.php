@@ -10,8 +10,8 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::prefix('/links')->middleware('auth:sanctum')->group(function () {
-    Route::post('/sync', [LinkApiController::class, 'sync'])->name('api.links.sync');
     Route::post('/', [LinkApiController::class, 'store'])->name('api.links.store');
+    Route::post('/sync', [LinkApiController::class, 'sync'])->name('api.links.sync');
     Route::get('/', [LinkApiController::class, 'index'])->name('api.links.index');
     Route::get('/{id}', [LinkApiController::class, 'show'])->name('api.links.show');
 });
