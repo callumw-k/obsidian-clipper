@@ -7,6 +7,7 @@ use App\Http\Requests\StoreLinkRequest;
 use App\Models\Link;
 use App\Services\LinkService;
 use Auth;
+use Illuminate\Http\Request;
 
 class LinkApiController extends Controller
 {
@@ -34,4 +35,13 @@ class LinkApiController extends Controller
         return response(new LinkDto($link), 201);
     }
 
+    public function sync(Request $request)
+    {
+        $request->validate([
+            'link_ids' => 'required|array',
+            'link_ids.*' => 'integer',
+        ]);
+        $links = Link::where('user_id', Auth::user()->id)->whereNotIn('id', $request->link_ids)->get();
+        return array_map(fn($link) => new LinkDto($link), $links->all());
+    }
 }

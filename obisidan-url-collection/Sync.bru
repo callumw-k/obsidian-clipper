@@ -1,0 +1,23 @@
+meta {
+  name: Sync
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{api_url}}/links/sync?link_ids=1,2,3
+  body: json
+  auth: inherit
+}
+
+params:query {
+  link_ids: 1,2,3
+}
+
+headers {
+  : 
+}
+
+body:json {
+  {"original_url": "https://callumwk.com"}
+}
