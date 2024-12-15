@@ -2,12 +2,18 @@
 # Base Image
 ############################################
 
-FROM serversideup/php:8.3-fpm-nginx-alpine AS base
+ARG BASE_IMAGE
+
+FROM serversideup/php:8.3-$BASE_IMAGE AS base
 
 
 USER root
 RUN install-php-extensions memcached
 
+
+############################################
+# Development Image
+############################################
 
 FROM base AS development
 
@@ -16,8 +22,9 @@ ARG GROUP_ID
 
 USER root
 
-RUN docker-php-serversideup-set-id www-data $USER_ID:$GROUP_ID  && \
-    docker-php-serversideup-set-file-permissions --owner $USER_ID:$GROUP_ID --service nginx
+#RUN docker-php-serversideup-set-id www-data $USER_ID:$GROUP_ID
+#    && \
+#    docker-php-serversideup-set-file-permissions --owner $USER_ID:$GROUP_ID --service unit
 
 USER www-data
 
@@ -64,9 +71,7 @@ RUN echo "VITE_REVERB_HOST: ${VITE_REVERB_HOST}"
 ENV NODE_ENV production
 RUN npm run build
 
-############################################
-# Development Image
-############################################
+
 
 
 

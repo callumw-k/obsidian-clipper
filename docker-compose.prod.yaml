@@ -1,9 +1,10 @@
 services:
   php:
-    image: php-app:latest
+    image: obsidian-clipper-unit
     build:
       context: .
       args:
+        BASE_IMAGE: unit
         APP_URL: ${APP_URL}
         REVERB_APP_KEY: ${REVERB_APP_KEY}
         VITE_REVERB_HOST: ${VITE_REVERB_HOST}
@@ -24,9 +25,14 @@ services:
 
 
   reverb:
-    depends_on:
-      - php
-    image: php-app:latest
+    image: obsidian-clipper-php
+    build:
+      context: .
+      args:
+        BASE_IMAGE: fpm-nginx-alpine
+        APP_URL: ${APP_URL}
+        REVERB_APP_KEY: ${REVERB_APP_KEY}
+        VITE_REVERB_HOST: ${VITE_REVERB_HOST}
     environment:
       PHP_OPCACHE_ENABLE: 1
       AUTORUN_ENABLED: false
@@ -44,8 +50,8 @@ services:
 
   queue:
     depends_on:
-      - php
-    image: php-app:latest
+      - reverb
+    image: obsidian-clipper-php
     environment:
       PHP_OPCACHE_ENABLE: 1
       LOG_CHANNEL: stderr
