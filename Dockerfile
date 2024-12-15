@@ -97,7 +97,7 @@ COPY --from=node:lts-alpine /usr/local/bin /usr/local/bin
 COPY --from=node:lts-alpine /usr/local/lib /usr/local/lib
 COPY --from=node:lts-alpine /usr/lib /usr/lib
 
-RUN npm install -g puppeteer
+#RUN npm install -g puppeteer
 
 COPY --from=node --chown=www-data:www-data /app/public/build ./public/build
 COPY --from=composer --chown=www-data:www-data /app/vendor ./vendor
