@@ -11,9 +11,7 @@ USER root
 RUN install-php-extensions memcached
 
 
-############################################
-# Development Image
-############################################
+
 
 FROM base AS development
 
@@ -22,9 +20,8 @@ ARG GROUP_ID
 
 USER root
 
-#RUN docker-php-serversideup-set-id www-data $USER_ID:$GROUP_ID
-#    && \
-#    docker-php-serversideup-set-file-permissions --owner $USER_ID:$GROUP_ID --service unit
+RUN docker-php-serversideup-set-id www-data $USER_ID:$GROUP_ID && \
+    docker-php-serversideup-set-file-permissions --owner $USER_ID:$GROUP_ID --service nginx
 
 USER www-data
 

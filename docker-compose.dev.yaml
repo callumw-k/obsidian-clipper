@@ -22,7 +22,7 @@ services:
       context: .
       target: development
       args:
-        BASE_IMAGE: unit
+        BASE_IMAGE: fpm-nginx-alpine
         USER_ID: 1000
         GROUP_ID: 1000
     depends_on:
@@ -37,18 +37,17 @@ services:
     volumes:
       - .:/var/www/html
 
+  whoami:
+    # A container that exposes an API to show its IP address
+    image: traefik/whoami
+    labels:
+      - "traefik.http.routers.whoami.rule=Host(`whoami.docker.localhost`)"
+
   reverb:
     depends_on:
       - php
       - pgsql
-    image: obsidian-clipper-reverb
-    build:
-      context: .
-      target: development
-      args:
-        BASE_IMAGE: fpm-nginx-alpine
-        USER_ID: 1000
-        GROUP_ID: 1000
+    image: ${IMAGE_NAME}
     environment:
       PHP_OPCACHE_ENABLE: 1
       AUTORUN_ENABLED: false
@@ -59,7 +58,7 @@ services:
     stop_signal: SIGTERM
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.reverb.rule=HostRegexp(`reverb.localhost`)"
+      - "traefik.http.routers.reverb.rule=Host(`reverb.localhost`)"
       - "traefik.http.routers.reverb.entrypoints=web"
       - "traefik.http.services.reverb.loadbalancer.server.port=8080"
       - "traefik.http.services.reverb.loadbalancer.server.scheme=http"

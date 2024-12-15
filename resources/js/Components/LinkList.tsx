@@ -39,7 +39,7 @@ function LinkItem({ link }: { link: Link }) {
         success: true,
     });
 
-    const { data, put, setData, processing } = useForm({
+    const { data, put, setData } = useForm({
         title: link.title ?? '',
     });
 
@@ -63,7 +63,7 @@ function LinkItem({ link }: { link: Link }) {
             setData('title', link.title);
         }
         if (isEditing) setIsEditing(false);
-    }, [link.title]);
+    }, [data.title, isEditing, link.title, setData]);
 
     useEffect(() => {
         if (isEditing) {
@@ -73,6 +73,7 @@ function LinkItem({ link }: { link: Link }) {
     }, [isEditing]);
 
     const showImage = link.image && imageStatus.success;
+
     return (
         <div
             style={{ ...(isEditing && { borderColor: 'white' }) }}
@@ -196,7 +197,7 @@ export default function LinkList({ links }: { links: Links }) {
     return (
         <div
             className={
-                'mx-auto mt-8 grid w-full max-w-7xl gap-8 p-4 md:auto-rows-[minmax(0,4rem)]'
+                'mx-auto mt-8 grid w-full max-w-7xl gap-8 px-4 md:auto-rows-[minmax(0,4rem)]'
             }
         >
             {links.map((link) => (
