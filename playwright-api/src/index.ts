@@ -6,6 +6,9 @@ const app = new Hono();
 const browser = await chromium.launch();
 const context = await browser.newContext(devices['iPhone 11']);
 
+app.get('/', (c) => {
+    return c.json({ status: 'success' });
+});
 app.post('/', async (c) => {
     const body = await c.req.json();
     if (!('url' in body)) return c.json({ error: 'URL not found' });

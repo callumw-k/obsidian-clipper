@@ -11,6 +11,8 @@ services:
     environment:
       PHP_OPCACHE_ENABLE: 1
       AUTORUN_ENABLED: true
+    networks:
+      - playwright
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/up" ]
       interval: 30s
@@ -53,6 +55,14 @@ services:
       context: ./playwright-api
     image: obsidian-clipper-playwright
     ipc: host
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3000" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - playwright
     security_opt:
       - seccomp=./playwright-api/seccomp_profile.json
   #    volumes:
@@ -86,6 +96,7 @@ services:
 #        ipv4_address: 172.99.0.100
 
 networks:
+  playwright:
   chromium_net:
     ipam:
       driver: default
