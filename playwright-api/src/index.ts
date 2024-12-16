@@ -18,18 +18,18 @@ app.post('/', async (c) => {
     let image = '';
     try {
         title = await page.title();
-    } catch (_) {
-        console.error("Couldn't process title");
+    } catch (e) {
+        console.error(`Error from title: ${e}`);
     }
 
-    try {
-        image =
-            (await page
-                .locator('meta[property="og:image"]')
-                .getAttribute('content', { timeout: 3000 })) || '';
-    } catch (e) {
-        console.error(e);
-    }
+    // try {
+    //     image =
+    //         (await page
+    //             .locator('meta[property="og:image"]')
+    //             .getAttribute('content', { timeout: 3000 })) || '';
+    // } catch (e) {
+    //     console.error(`Error from image url: ${e}`);
+    // }
 
     return c.json({ title: title, imageUrl: image });
 });
