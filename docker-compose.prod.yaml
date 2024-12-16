@@ -48,6 +48,17 @@ services:
       - "reverb_storage_sessions:/var/www/html/storage/framework/sessions"
       - "reverb_storage_logs:/var/www/html/storage/logs"
 
+  playwright:
+    build:
+      context: ./playwright-api
+    image: obsidian-clipper-playwright
+    ipc: host
+    security_opt:
+      - seccomp=./playwright-api/seccomp_profile.json
+    volumes:
+      - ./playwright-api/seccomp_profile.json:/seccomp_profile.json
+
+
   queue:
     depends_on:
       - reverb

@@ -58,7 +58,7 @@ services:
     stop_signal: SIGTERM
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.reverb.rule=Host(`reverb.localhost`)"
+      - "traefik.http.routers.reverb.rule=HostRegexp(`reverb.localhost`)"
       - "traefik.http.routers.reverb.entrypoints=web"
       - "traefik.http.services.reverb.loadbalancer.server.port=8080"
       - "traefik.http.services.reverb.loadbalancer.server.scheme=http"
@@ -73,6 +73,8 @@ services:
     build:
       context: ./playwright-api
     image: ${IMAGE_NAME}-playwright
+    networks:
+      - development
     ipc: host
     labels:
       - "traefik.enable=true"
@@ -95,7 +97,7 @@ services:
     environment:
       PHP_OPCACHE_ENABLE: 1
       LOG_CHANNEL: stderr
-    command: [ "php", "/var/www/html/artisan", "queue:work", "--tries=3" ]
+    command: [ "php", "/var/www/html/artisan", "queue:listen" ]
     stop_signal: SIGTERM
     volumes:
       - .:/var/www/html
