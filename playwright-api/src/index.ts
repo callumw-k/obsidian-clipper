@@ -3,9 +3,10 @@ import { Hono } from 'hono';
 import { chromium, devices } from 'playwright';
 
 const app = new Hono();
+const isDev = process.env;
 const browser = await chromium.launch({
     proxy: {
-        server: 'http://gate.smartproxy.com:10001',
+        server: 'https://gate.smartproxy.com:10001',
         password: 'PKclfcFv2w1~Xw40qk',
         username: 'spkkoto9n4',
     },
@@ -17,12 +18,16 @@ app.get('/', (c) => {
 });
 app.post('/', async (c) => {
     const body = await c.req.json();
-    if (!('url' in body)) return c.json({ error: 'URL not found' });
+    if (!('url' in body)) {
+        return c.json({ error: 'URL not found' });
+    }
+
     const page = await context.newPage();
     await page.goto(body.url);
+
     let title = '';
     let image = '';
-    console.log(await page.content());
+
     try {
         console.log('Trying to get title...');
         title = await page.title();
