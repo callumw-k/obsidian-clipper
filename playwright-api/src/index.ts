@@ -3,7 +3,6 @@ import { Hono } from 'hono';
 import { chromium, devices } from 'playwright';
 
 const app = new Hono();
-const isDev = process.env;
 const browser = await chromium.launch({
     proxy: {
         server: 'https://gate.smartproxy.com:10001',
@@ -11,7 +10,6 @@ const browser = await chromium.launch({
         username: 'spkkoto9n4',
     },
 });
-const context = await browser.newContext(devices['iPhone 11']);
 
 app.get('/', (c) => {
     return c.json({ status: 'success' });
@@ -22,6 +20,7 @@ app.post('/', async (c) => {
         return c.json({ error: 'URL not found' });
     }
 
+    const context = await browser.newContext(devices['iPhone 11']);
     const page = await context.newPage();
     await page.goto(body.url);
 
