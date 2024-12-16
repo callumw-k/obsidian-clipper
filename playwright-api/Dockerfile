@@ -3,7 +3,8 @@ FROM node:lts-bookworm AS base
 
 FROM base AS builder
 WORKDIR /app
-COPY package*json tsconfig.json src ./
+COPY package*json tsconfig.json ./
+COPY src ./
 
 RUN npm ci && \
     npm run build && \

@@ -3,7 +3,13 @@ import { Hono } from 'hono';
 import { chromium, devices } from 'playwright';
 
 const app = new Hono();
-const browser = await chromium.launch();
+const browser = await chromium.launch({
+    proxy: {
+        server: 'http://gate.smartproxy.com:10001',
+        password: 'PKclfcFv2w1~Xw40qk',
+        username: 'spkkoto9n4',
+    },
+});
 const context = await browser.newContext(devices['iPhone 11']);
 
 app.get('/', (c) => {
@@ -25,14 +31,14 @@ app.post('/', async (c) => {
         console.error(`Error from title: ${e}`);
     }
 
-    // try {
-    //     image =
-    //         (await page
-    //             .locator('meta[property="og:image"]')
-    //             .getAttribute('content', { timeout: 3000 })) || '';
-    // } catch (e) {
-    //     console.error(`Error from image url: ${e}`);
-    // }
+    try {
+        image =
+            (await page
+                .locator('meta[property="og:image"]')
+                .getAttribute('content', { timeout: 3000 })) || '';
+    } catch (e) {
+        console.error(`Error from image url: ${e}`);
+    }
 
     return c.json({ title: title, imageUrl: image });
 });
