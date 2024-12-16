@@ -5,9 +5,10 @@ import { chromium, devices } from 'playwright';
 const app = new Hono();
 const browser = await chromium.launch({
     proxy: {
-        server: 'http://gate.smartproxy.com:10001',
+        server: 'gate.smartproxy.com',
         password: 'PKclfcFv2w1~Xw40qk',
         username: 'spkkoto9n4',
+        port: 10001,
     },
 });
 
