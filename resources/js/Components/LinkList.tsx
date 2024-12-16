@@ -55,15 +55,9 @@ function LinkItem({ link }: { link: Link }) {
         }
         put(`/links/${link.id}`, {
             preserveScroll: true,
+            onSuccess: () => setIsEditing(false),
         });
     };
-
-    useEffect(() => {
-        if (link.title && link.title !== data.title) {
-            setData('title', link.title);
-        }
-        if (isEditing) setIsEditing(false);
-    }, [data.title, isEditing, link.title, setData]);
 
     useEffect(() => {
         if (isEditing) {
