@@ -11,8 +11,6 @@ USER root
 RUN install-php-extensions memcached
 
 
-
-
 FROM base AS development
 
 ARG USER_ID

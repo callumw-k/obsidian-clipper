@@ -68,6 +68,23 @@ services:
     volumes:
       - .:/var/www/html
 
+
+  playwright:
+    build:
+      context: ./playwright-api
+    image: ${IMAGE_NAME}-playwright
+    ipc: host
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.playwright.rule=HostRegexp(`playwright.localhost`)"
+      - "traefik.http.routers.playwright.entrypoints=web"
+      - "traefik.http.services.playwright.loadbalancer.server.port=3000"
+      - "traefik.http.services.playwright.loadbalancer.server.scheme=http"
+    security_opt:
+      - seccomp=./playwright-api/seccomp_profile.json
+    volumes:
+      - ./playwright-api/seccomp_profile.json:/seccomp_profile.json
+
   queue:
     image: ${IMAGE_NAME}
     depends_on:
