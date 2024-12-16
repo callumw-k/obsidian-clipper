@@ -16,8 +16,11 @@ app.post('/', async (c) => {
     await page.goto(body.url);
     let title = '';
     let image = '';
+    console.log(await page.content());
     try {
+        console.log('Trying to get title...');
         title = await page.title();
+        console.log(`Title is ${title}`);
     } catch (e) {
         console.error(`Error from title: ${e}`);
     }
