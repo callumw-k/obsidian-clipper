@@ -55,8 +55,8 @@ services:
     ipc: host
     security_opt:
       - seccomp=./playwright-api/seccomp_profile.json
-    volumes:
-      - ./playwright-api/seccomp_profile.json:/seccomp_profile.json
+  #    volumes:
+  #      - ./playwright-api/seccomp_profile.json:/seccomp_profile.json
 
 
   queue:
