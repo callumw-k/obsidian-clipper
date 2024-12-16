@@ -38,7 +38,7 @@ class CrawlUrlJob implements ShouldQueue
 
     public function crawlWithPlaywright(): void
     {
-        $response = Http::post('playwright', [
+        $response = Http::post('playwright:3000', [
             'url' => $this->link->original_url,
         ]);
 
