@@ -6,7 +6,7 @@ const app = new Hono();
 const browser = await chromium.launch({
     headless: true,
     proxy: {
-        server: 'socks5h://gate.smartproxy.com:7000',
+        server: 'https://au.smartproxy.com:30001',
         password: 'PKclfcFv2w1~Xw40qk',
         username: 'spkkoto9n4',
     },
