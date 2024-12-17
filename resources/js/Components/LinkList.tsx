@@ -42,6 +42,7 @@ function LinkItem({ link }: { link: Link }) {
     const { data, put, setData } = useForm({
         title: link.title ?? '',
     });
+    console.debug(data.title);
 
     const { toast } = useToast();
 
