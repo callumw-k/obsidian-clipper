@@ -16,7 +16,7 @@ FROM base AS runner
 WORKDIR /app
 
 ENV PLAYWRIGHT_BROWSERS_PATH=/app/pw-browsers
-RUN npx -y playwright@1.49.1 install --with-deps --only-shell
+RUN npx -y playwright@1.49.1 install --with-deps chromium --only-shell
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 hono
