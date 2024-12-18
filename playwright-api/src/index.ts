@@ -6,12 +6,11 @@ const app = new Hono();
 const browser = await chromium.launch({
     headless: true,
     proxy: {
-        server: 'http://gate.smartproxy.com:10001',
+        server: 'https://au.smartproxy.com:30001',
         password: 'PKclfcFv2w1~Xw40qk',
         username: 'spkkoto9n4',
     },
 });
-const context = await browser.newContext(devices['iPhone 14']);
 
 app.get('/', (c) => {
     return c.json({ status: 'success' });
@@ -22,6 +21,7 @@ app.post('/', async (c) => {
         return c.json({ error: 'URL not found' });
     }
 
+    const context = await browser.newContext(devices['iPhone 11']);
     const page = await context.newPage();
     await page.goto(body.url, { waitUntil: 'domcontentloaded' });
 

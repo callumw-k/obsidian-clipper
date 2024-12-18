@@ -1,18 +1,16 @@
 services:
   php:
-    image: obsidian-clipper-unit
+    image: obsidian-clipper
     build:
       context: .
       args:
-        BASE_IMAGE: unit
+        BASE_IMAGE: fpm-nginx-alpine
         APP_URL: ${APP_URL}
         REVERB_APP_KEY: ${REVERB_APP_KEY}
         VITE_REVERB_HOST: ${VITE_REVERB_HOST}
     environment:
       PHP_OPCACHE_ENABLE: 1
       AUTORUN_ENABLED: true
-    networks:
-      - playwright
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080/up" ]
       interval: 30s
@@ -27,14 +25,14 @@ services:
 
 
   reverb:
-    image: obsidian-clipper-php
-    build:
-      context: .
-      args:
-        BASE_IMAGE: fpm-nginx-alpine
-        APP_URL: ${APP_URL}
-        REVERB_APP_KEY: ${REVERB_APP_KEY}
-        VITE_REVERB_HOST: ${VITE_REVERB_HOST}
+    image: obsidian-clipper
+    #    build:
+    #      context: .
+    #      args:
+    #        BASE_IMAGE: fpm-nginx-alpine
+    #        APP_URL: ${APP_URL}
+    #        REVERB_APP_KEY: ${REVERB_APP_KEY}
+    #        VITE_REVERB_HOST: ${VITE_REVERB_HOST}
     environment:
       PHP_OPCACHE_ENABLE: 1
       AUTORUN_ENABLED: false
@@ -72,7 +70,7 @@ services:
   queue:
     depends_on:
       - reverb
-    image: obsidian-clipper-php
+    image: obsidian-clipper
     environment:
       PHP_OPCACHE_ENABLE: 1
       LOG_CHANNEL: stderr
@@ -96,7 +94,6 @@ services:
 #        ipv4_address: 172.99.0.100
 
 networks:
-  playwright:
   chromium_net:
     ipam:
       driver: default
