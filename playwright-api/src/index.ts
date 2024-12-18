@@ -3,15 +3,15 @@ import { Hono } from 'hono';
 import { chromium, devices } from 'playwright';
 
 const app = new Hono();
-const isDev = process.env;
 const browser = await chromium.launch({
+    headless: true,
     proxy: {
-        server: 'https://gate.smartproxy.com:10001',
+        server: 'http://gate.smartproxy.com:10001',
         password: 'PKclfcFv2w1~Xw40qk',
         username: 'spkkoto9n4',
     },
 });
-const context = await browser.newContext(devices['iPhone 11']);
+const context = await browser.newContext(devices['iPhone 14']);
 
 app.get('/', (c) => {
     return c.json({ status: 'success' });
@@ -23,7 +23,7 @@ app.post('/', async (c) => {
     }
 
     const page = await context.newPage();
-    await page.goto(body.url);
+    await page.goto(body.url, { waitUntil: 'domcontentloaded' });
 
     let title = '';
     let image = '';
