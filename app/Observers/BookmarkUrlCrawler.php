@@ -67,13 +67,25 @@ class BookmarkUrlCrawler extends CrawlObserver
      */
     public function finishedCrawling(): void
     {
-        Log::info("Updating database");
-        $success = $this->link->update(['title' => $this->title, 'image' => $this->image_url]);
+        $titleUnchanged = ($this->link->title === $this->title);
+        $imageUnchanged = ($this->link->image === $this->image_url);
+
+        if ($titleUnchanged && $imageUnchanged) {
+            Log::info("No changes detected. Skipping update and event dispatch.");
+            return;
+        }
+
+        Log::info("Updating database", ['old_title' => $this->link->title, 'new_title' => $this->title, 'old_image' => $this->link->image, 'new_image' => $this->image_url]);
+        $success = $this->link->update([
+            'title' => $this->title,
+            'image' => $this->image_url,
+        ]);
+
         if ($success) {
-            Log::info("Attempting to dispatch event", ['link', $this->link]);
+            Log::info("Update successful, dispatching event", ['link_id' => $this->link->id]);
             event(new LinkImageUpdated($this->link));
         } else {
-            Log::error("Failed to update link");
+            Log::error("Failed to update link in database", ['link_id' => $this->link->id]);
         }
     }
 
@@ -84,9 +96,6 @@ class BookmarkUrlCrawler extends CrawlObserver
 
         $title = '';
 
-        if (!empty($this->link->title)) {
-            return;
-        }
 
         if ($crawler->filterXPath('//meta[@property="og:title"]')->count() > 0) {
             $title = $crawler->filterXPath('//meta[@property="og:title"]')->attr('content');
@@ -96,9 +105,6 @@ class BookmarkUrlCrawler extends CrawlObserver
             $title = $crawler->filterXPath('//title')->text();
         }
 
-        if (!empty($this->link->image)) {
-            return;
-        }
 
         $image = '';
 
