@@ -75,11 +75,11 @@ class BookmarkUrlCrawler extends CrawlObserver
             return;
         }
 
-        Log::info("Updating database", ['old_title' => $this->link->title, 'new_title' => $this->title, 'old_image' => $this->link->image, 'new_image' => $this->image_url]);
         $success = $this->link->update([
-            'title' => $this->title,
-            'image' => $this->image_url,
+            'title' => empty($this->link->title) ? $this->title : $this->link->title,
+            'image' => empty($this->link->image_url) ? $this->image_url : $this->link->image,
         ]);
+        Log::info("Updated database", $this->link->toArray());
 
         if ($success) {
             Log::info("Update successful, dispatching event", ['link_id' => $this->link->id]);
