@@ -32,7 +32,6 @@ async function processTitleAndImage(url: string) {
     } catch (e) {
         console.error(`Error from title: ${e}`);
         await browser.close();
-        await page.close();
         browser = await chromium.launch({ proxy: proxyConf, headless: true });
         return await processTitleAndImage(url);
     }
@@ -45,7 +44,6 @@ async function processTitleAndImage(url: string) {
     } catch (e) {
         console.error(`Error from image url: ${e}`);
     }
-    await page.close();
     await context.close();
     return { title, image };
 }
