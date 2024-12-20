@@ -8,9 +8,10 @@ const proxyConf = {
     password: 'PKclfcFv2w1~Xw40qk',
     username: 'spkkoto9n4',
 };
+const noProxy = process.env['NO_PROXY'] ?? false;
 let browser = await chromium.launch({
     headless: true,
-    proxy: proxyConf,
+    proxy: noProxy ? undefined : proxyConf,
 });
 
 app.get('/', (c) => {
