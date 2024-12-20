@@ -119,7 +119,7 @@ function LinkItem({ link }: { link: Link }) {
                             value={data.title}
                             onChange={(e) => setData('title', e.target.value)}
                             className={
-                                'min-w-0 bg-transparent px-2 outline-none'
+                                'w-full min-w-0 bg-transparent px-2 outline-none'
                             }
                             placeholder={link.title}
                         />
