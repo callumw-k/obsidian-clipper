@@ -59,8 +59,6 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
-    networks:
-      - playwright
     security_opt:
       - seccomp=./playwright-api/seccomp_profile.json
   #    volumes:

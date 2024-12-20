@@ -5,11 +5,11 @@ import { chromium, devices } from 'playwright';
 const app = new Hono();
 const browser = await chromium.launch({
     headless: true,
-    // proxy: {
-    //     server: 'https://au.smartproxy.com:30001',
-    //     password: 'PKclfcFv2w1~Xw40qk',
-    //     username: 'spkkoto9n4',
-    // },
+    proxy: {
+        server: 'https://au.smartproxy.com:30001',
+        password: 'PKclfcFv2w1~Xw40qk',
+        username: 'spkkoto9n4',
+    },
 });
 
 app.get('/', (c) => {
