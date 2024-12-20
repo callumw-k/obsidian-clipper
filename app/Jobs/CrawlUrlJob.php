@@ -30,28 +30,37 @@ class CrawlUrlJob implements ShouldQueue
      */
     public function handle(): void
     {
-//        $browser = Browsershot::url($this->link->original_url)
-//            ->setRemoteInstance('172.99.0.100', '9222');
-
         $this->crawlWithPlaywright();
+
+        $this->crawlWithBrowsershot();
+
     }
 
     public function crawlWithPlaywright(): void
     {
+
+        Log::info("Running crawl with playwright");
+
         $response = Http::post('playwright:3000', [
             'url' => $this->link->original_url,
         ]);
 
-        Log::info("Running crawl with playwright");
+        if ($response->failed()) {
+            return;
+        }
+
         $json = $response->json();
 
         $success = $this->link->update(['title' => $json['title'], 'image' => $json['imageUrl']]);
-        if ($success) {
-            Log::info("Attempting to dispatch event", ['link', $this->link]);
-            event(new LinkImageUpdated($this->link));
-        } else {
+
+        if (!$success) {
             Log::error("Failed to update link");
+            return;
         }
+
+        Log::info("Attempting to dispatch event", ['link', $this->link]);
+
+        event(new LinkImageUpdated($this->link));
     }
 
     public function crawlWithBrowsershot(): void

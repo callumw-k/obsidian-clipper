@@ -84,12 +84,20 @@ class BookmarkUrlCrawler extends CrawlObserver
 
         $title = '';
 
+        if (!empty($this->link->title)) {
+            return;
+        }
+
         if ($crawler->filterXPath('//meta[@property="og:title"]')->count() > 0) {
             $title = $crawler->filterXPath('//meta[@property="og:title"]')->attr('content');
         }
 
         if (!$title && $crawler->filterXPath('//title')->count() > 0) {
             $title = $crawler->filterXPath('//title')->text();
+        }
+
+        if (!empty($this->link->image)) {
+            return;
         }
 
         $image = '';
