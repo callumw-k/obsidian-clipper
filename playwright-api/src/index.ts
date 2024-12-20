@@ -3,28 +3,24 @@ import { Hono } from 'hono';
 import { chromium, devices } from 'playwright';
 
 const app = new Hono();
-const browser = await chromium.launch({
+const proxyConf = {
+    server: 'https://au.smartproxy.com:30001',
+    password: 'PKclfcFv2w1~Xw40qk',
+    username: 'spkkoto9n4',
+};
+let browser = await chromium.launch({
     headless: true,
-    proxy: {
-        server: 'https://au.smartproxy.com:30001',
-        password: 'PKclfcFv2w1~Xw40qk',
-        username: 'spkkoto9n4',
-    },
+    proxy: proxyConf,
 });
 
 app.get('/', (c) => {
     return c.json({ status: 'success' });
 });
-app.post('/', async (c) => {
-    const body = await c.req.json();
-    if (!('url' in body)) {
-        return c.json({ error: 'URL not found' });
-    }
 
+async function processTitleAndImage(url: string) {
     const context = await browser.newContext(devices['iPhone 11']);
     const page = await context.newPage();
-    console.debug('this is a test');
-    await page.goto(body.url, { waitUntil: 'domcontentloaded' });
+    await page.goto(url, { waitUntil: 'domcontentloaded' });
 
     let title = '';
     let image = '';
@@ -35,6 +31,10 @@ app.post('/', async (c) => {
         console.log(`Title is ${title}`);
     } catch (e) {
         console.error(`Error from title: ${e}`);
+        await browser.close();
+        await page.close();
+        browser = await chromium.launch({ proxy: proxyConf, headless: true });
+        return await processTitleAndImage(url);
     }
 
     try {
@@ -45,6 +45,18 @@ app.post('/', async (c) => {
     } catch (e) {
         console.error(`Error from image url: ${e}`);
     }
+    await page.close();
+    await context.close();
+    return { title, image };
+}
+
+app.post('/', async (c) => {
+    const body = await c.req.json();
+
+    if (!('url' in body)) {
+        return c.json({ error: 'URL not found' });
+    }
+    const { title, image } = await processTitleAndImage(body.url);
 
     return c.json({ title: title, imageUrl: image });
 });
