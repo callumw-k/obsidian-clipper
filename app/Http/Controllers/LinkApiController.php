@@ -38,7 +38,7 @@ class LinkApiController extends Controller
     public function sync(Request $request)
     {
         $request->validate([
-            'link_ids' => 'required|array',
+            'link_ids' => 'present|array',
             'link_ids.*' => 'integer',
         ]);
         $links = Link::where('user_id', Auth::user()->id)->whereNotIn('id', $request->link_ids)->get();

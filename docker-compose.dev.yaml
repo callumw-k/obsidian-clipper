@@ -73,6 +73,8 @@ services:
     build:
       context: ./playwright-api
     image: ${IMAGE_NAME}-playwright
+    environment:
+      NO_PROXY: true
     networks:
       - development
     ipc: host
