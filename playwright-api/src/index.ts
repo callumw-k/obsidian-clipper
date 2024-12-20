@@ -44,7 +44,9 @@ async function processTitleAndImage(url: string) {
     } catch (e) {
         console.error(`Error from image url: ${e}`);
     }
+    console.log('Closing context...');
     await context.close();
+    console.log('Context closed');
     return { title, image };
 }
 
