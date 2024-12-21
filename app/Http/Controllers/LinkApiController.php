@@ -41,7 +41,16 @@ class LinkApiController extends Controller
             'link_ids' => 'present|array',
             'link_ids.*' => 'integer',
         ]);
-        $links = Link::where('user_id', Auth::user()->id)->whereNotIn('id', $request->link_ids)->get();
-        return array_map(fn($link) => new LinkDto($link), $links->all());
+        $userId = Auth::user()->id;
+        $links = Link::where('user_id', $userId)->whereNotIn('id', $request->link_ids)->orderByDesc('created_at')->get();
+
+        $existingIds = Link::where('user_id', $userId)
+            ->whereIn('id', $request->link_ids)
+            ->pluck('id')
+            ->all();
+
+        $linksToDelete = array_diff($request->link_ids, $existingIds);
+
+        return ['links' => array_map(fn($link) => new LinkDto($link), $links->all()), 'idsToDelete' => $linksToDelete];
     }
 }
