@@ -1,6 +1,6 @@
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
-import { chromium, devices } from 'playwright';
+import { type BrowserContext, chromium, devices, type Page } from 'playwright';
 
 const app = new Hono();
 const proxyConf = {
@@ -19,14 +19,16 @@ app.get('/', (c) => {
 });
 
 async function processTitleAndImage(url: string) {
-    const context = await browser.newContext(devices['iPhone 11']);
-    const page = await context.newPage();
-    await page.goto(url, { waitUntil: 'domcontentloaded' });
-
+    let context: BrowserContext | null;
+    let page: Page | null;
     let title = '';
     let image = '';
 
     try {
+        context = await browser.newContext(devices['iPhone 11']);
+        page = await context.newPage();
+        await page.goto(url, { waitUntil: 'domcontentloaded' });
+
         console.log('Trying to get title...');
         title = await page.title();
         console.log(`Title is ${title}`);
