@@ -1,6 +1,6 @@
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
-import { type BrowserContext, chromium, devices, type Page } from 'playwright';
+import { chromium, devices } from 'playwright';
 
 const app = new Hono();
 const proxyConf = {
@@ -9,34 +9,30 @@ const proxyConf = {
     username: 'spkkoto9n4',
 };
 const noProxy = process.env['NO_PROXY'] ?? false;
-let browser = await chromium.launch({
-    headless: true,
-    proxy: noProxy ? undefined : proxyConf,
-});
 
 app.get('/', (c) => {
     return c.json({ status: 'success' });
 });
 
 async function processTitleAndImage(url: string) {
-    let context: BrowserContext | null;
-    let page: Page | null;
+    const browser = await chromium.launch({
+        headless: true,
+        proxy: noProxy ? undefined : proxyConf,
+    });
+
     let title = '';
     let image = '';
 
-    try {
-        context = await browser.newContext(devices['iPhone 11']);
-        page = await context.newPage();
-        await page.goto(url, { waitUntil: 'domcontentloaded' });
+    const context = await browser.newContext(devices['iPhone 11']);
+    const page = await context.newPage();
+    await page.goto(url, { waitUntil: 'domcontentloaded' });
 
+    try {
         console.log('Trying to get title...');
         title = await page.title();
         console.log(`Title is ${title}`);
     } catch (e) {
-        console.error(`Error from title: ${e}`);
-        await browser.close();
-        browser = await chromium.launch({ proxy: proxyConf, headless: true });
-        return await processTitleAndImage(url);
+        console.error(`Couldn't get title ${e}`);
     }
 
     try {
@@ -47,9 +43,10 @@ async function processTitleAndImage(url: string) {
     } catch (e) {
         console.error(`Error from image url: ${e}`);
     }
-    console.log('Closing context...');
-    await context.close();
-    console.log('Context closed');
+
+    console.log('Closing browser...');
+    await browser.close();
+    console.log('Browser closed');
     return { title, image };
 }
 
@@ -65,15 +62,6 @@ app.post('/', async (c) => {
 });
 
 const port = 3000;
-
-const handleShutdown = async (signal: string) => {
-    console.log(`Received ${signal}. Closing browser and shutting down.`);
-    await browser.close();
-    process.exit(0);
-};
-
-process.on('SIGINT', handleShutdown); // Handle Ctrl+C
-process.on('SIGTERM', handleShutdown);
 
 serve({
     fetch: app.fetch,
